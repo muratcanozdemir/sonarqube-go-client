@@ -1,96 +1,158 @@
 name: Release
 
+# Pushing a tag vX.Y.Z (or vX.Y.Z-rc.1, published as a pre-release) builds the
+# CLI at that version and publishes a GitHub release with:
+#   sonarqube-cli_X.Y.Z_linux_amd64.tar.gz                        binary, LICENSE, README, CHANGELOG
+#   sonarqube-cli_X.Y.Z_linux_amd64.cdx.json                      CycloneDX SBOM of the binary
+#   sonarqube-cli_X.Y.Z_linux_amd64.tar.gz.provenance.sigstore.json  SLSA build provenance (Sigstore bundle)
+#   sonarqube-cli_X.Y.Z_linux_amd64.tar.gz.sbom.sigstore.json        SBOM attestation (Sigstore bundle)
+#   SHA256SUMS
+# If the release already exists (e.g. created by release-please or in the
+# GitHub UI), the assets are attached to it; existing assets are never replaced.
+# Both attestations are verified with `gh attestation verify` before publishing.
+#
+# release-please (.github/workflows/release-please.yml) calls this workflow with
+# the tag it has just created, because tags pushed with the workflow token do
+# not trigger workflows. Called that way, this file is still the signer
+# workflow of the attestations.
+
 on:
   push:
-    branches: [main]
+    tags: ["v*"]
+  workflow_call:
+    inputs:
+      tag:
+        description: Tag vX.Y.Z to build and release, created by release-please at the calling commit
+        required: true
+        type: string
 
-permissions:
-  contents: read
+permissions: {}
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  release-please:
+  release:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     permissions:
-      contents: write
-      pull-requests: write
-    outputs:
-      created: ${{ steps.rp.outputs.release_created }}
-      tag: ${{ steps.rp.outputs.tag_name }}
-      version: ${{ steps.rp.outputs.version }}
-    steps:
-      - id: rp
-        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
-        with:
-          # A PAT or GitHub App token lets CI run on the release PR; the
-          # default GITHUB_TOKEN works but does not trigger other workflows.
-          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
-          config-file: release-please-config.json
-          manifest-file: .release-please-manifest.json
-
-  binaries:
-    needs: release-please
-    if: needs.release-please.outputs.created == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write      # upload release assets
-      id-token: write      # Sigstore signing for attestations
-      attestations: write  # store attestations
+      contents: write     # create the release / upload assets
+      id-token: write     # Sigstore signing certificate for the attestations
+      attestations: write
+      artifact-metadata: write
     env:
-      TAG: ${{ needs.release-please.outputs.tag }}
-      VERSION: ${{ needs.release-please.outputs.version }}
+      TAG: ${{ inputs.tag || github.ref_name }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: ${{ needs.release-please.outputs.tag }}
+          ref: ${{ env.TAG }}
+          persist-credentials: false
+
       - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
-          go-version-file: go.mod
+          # Shipped binaries are built with the newest patched Go (standard
+          # library fixes); go.mod's minimum is tested by CI for library users.
+          go-version: stable
+          check-latest: true
+          # no module/build cache: a release is built from fresh downloads only
+          cache: false
+
+      - name: Version from tag
+        id: version
+        run: |
+          if [[ ! "$TAG" =~ ^v([0-9]+\.[0-9]+\.[0-9]+)(-[0-9A-Za-z.]+)?$ ]]; then
+            echo "::error::tag $TAG is not vMAJOR.MINOR.PATCH[-prerelease]"
+            exit 1
+          fi
+          echo "version=${TAG#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Test
+        run: go test -race ./...
+
+      - name: Vulnerability scan (govulncheck)
+        # fails the release on a known vulnerability reachable from the code
+        run: go run golang.org/x/vuln/cmd/govulncheck@v1.9.0 ./...
+
       - name: Build linux/amd64
         env:
           CGO_ENABLED: "0"
           GOOS: linux
           GOARCH: amd64
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           name="sonarqube-cli_${VERSION}_linux_amd64"
-          mkdir -p "dist/$name"
-          go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" -o "dist/$name/sonarqube-cli" ./cmd/sonarqube-cli
-          for f in LICENSE README.md CHANGELOG.md; do [ -f "$f" ] && cp "$f" "dist/$name/"; done
-          # Reproducible archive: fixed mtime/owner, sorted entries.
+          mkdir -p "build/$name" dist
+          go build -trimpath -buildvcs=true -ldflags "-s -w -X main.version=${VERSION}" \
+            -o "build/$name/sonarqube-cli" ./cmd/sonarqube-cli
+          "build/$name/sonarqube-cli" version
+          for f in LICENSE README.md CHANGELOG.md; do [ -f "$f" ] && cp "$f" "build/$name/"; done
+          # reproducible archive: fixed mtime/owner, sorted entries
           tar --sort=name --mtime="@$(git log -1 --format=%ct)" --owner=0 --group=0 --numeric-owner \
-            -C dist -czf "dist/$name.tar.gz" "$name"
-          echo "ARCHIVE=dist/$name.tar.gz" >> "$GITHUB_ENV"
-          echo "BINARY=dist/$name/sonarqube-cli" >> "$GITHUB_ENV"
-      - name: SBOM (SPDX and CycloneDX)
+            -C build -cf - "$name" | gzip -n > "dist/$name.tar.gz"
+          echo "NAME=$name" >> "$GITHUB_ENV"
+
+      - name: SBOM (CycloneDX, from the binary's embedded build info)
         uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
         with:
-          file: ${{ env.BINARY }}
-          format: spdx-json
-          output-file: dist/sonarqube-cli_${{ env.VERSION }}_linux_amd64.spdx.json
-          upload-artifact: false
-          upload-release-assets: false
-      - uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
-        with:
-          file: ${{ env.BINARY }}
+          file: build/${{ env.NAME }}/sonarqube-cli
           format: cyclonedx-json
-          output-file: dist/sonarqube-cli_${{ env.VERSION }}_linux_amd64.cdx.json
+          output-file: dist/${{ env.NAME }}.cdx.json
           upload-artifact: false
           upload-release-assets: false
-      - name: Checksums
-        run: cd dist && sha256sum -- *.tar.gz *.spdx.json *.cdx.json > SHA256SUMS
-      - name: SLSA build provenance
-        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+
+      - name: Attest build provenance
+        id: provenance
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
-          subject-path: |
-            ${{ env.ARCHIVE }}
-            ${{ env.BINARY }}
-      - name: SBOM attestation
-        uses: actions/attest-sbom@c604332985a26aa8cf1bdc465b92731239ec6b9e # v4.1.0
+          subject-path: dist/${{ env.NAME }}.tar.gz
+
+      - name: Attest SBOM
+        id: sbom
+        uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
-          subject-path: ${{ env.ARCHIVE }}
-          sbom-path: dist/sonarqube-cli_${{ env.VERSION }}_linux_amd64.spdx.json
-      - name: Upload release assets
+          subject-path: dist/${{ env.NAME }}.tar.gz
+          sbom-path: dist/${{ env.NAME }}.cdx.json
+
+      - name: Verify attestations
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PROVENANCE_BUNDLE: ${{ steps.provenance.outputs.bundle-path }}
+          SBOM_BUNDLE: ${{ steps.sbom.outputs.bundle-path }}
+        run: |
+          archive="dist/$NAME.tar.gz"
+          cp "$PROVENANCE_BUNDLE" "$archive.provenance.sigstore.json"
+          cp "$SBOM_BUNDLE" "$archive.sbom.sigstore.json"
+          # signed by this workflow, from this ref and commit, on a GitHub-hosted
+          # runner; checked against the attestations API and the published bundles
+          common=(--repo "$GITHUB_REPOSITORY"
+                  --signer-workflow "$GITHUB_REPOSITORY/.github/workflows/release.yml"
+                  --source-ref "$GITHUB_REF"
+                  --source-digest "$GITHUB_SHA"
+                  --deny-self-hosted-runners)
+          verify() { # predicate type, published bundle
+            gh attestation verify "$archive" "${common[@]}" --predicate-type "$1"
+            gh attestation verify "$archive" "${common[@]}" --predicate-type "$1" --bundle "$2"
+          }
+          verify https://slsa.dev/provenance/v1 "$archive.provenance.sigstore.json"
+          verify https://cyclonedx.org/bom "$archive.sbom.sigstore.json"
+
+      - name: Publish release
+        # Attaches the assets to an existing release (release-please, GitHub UI),
+        # keeping its title and notes, or creates it. Never replaces an asset.
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release upload "$TAG" --clobber \
-            "$ARCHIVE" dist/*.spdx.json dist/*.cdx.json dist/SHA256SUMS
+          (cd dist && sha256sum -- * > SHA256SUMS)
+          if gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "Release $TAG exists: attaching assets"
+            gh release upload "$TAG" dist/* --repo "$GITHUB_REPOSITORY"
+          else
+            prerelease=()
+            if [[ "$TAG" == *-* ]]; then prerelease=(--prerelease); fi
+            # notes: the version's CHANGELOG.md section, else generated by GitHub
+            awk -v v="${TAG#v}" '/^## / { on = index($0, "## [" v "]") == 1; next } on' CHANGELOG.md 2>/dev/null > "$RUNNER_TEMP/notes.md" || true
+            if [[ -s "$RUNNER_TEMP/notes.md" ]]; then notes=(--notes-file "$RUNNER_TEMP/notes.md"); else notes=(--generate-notes); fi
+            gh release create "$TAG" dist/* --repo "$GITHUB_REPOSITORY" --verify-tag "${notes[@]}" \
+              --title "$TAG" "${prerelease[@]}"
+          fi

@@ -118,8 +118,8 @@ for example "Community Edition: 26.10–26.11." or "Changes: added (optional) in
 ## CLI
 
 Tagged releases ship a Linux x86-64 binary
-(`sonarqube-cli_<version>_linux_amd64.tar.gz`), plus SPDX and CycloneDX SBOMs and
-`SHA256SUMS`.
+(`sonarqube-cli_<version>_linux_amd64.tar.gz`), its CycloneDX SBOM, the
+provenance and SBOM attestation bundles, and `SHA256SUMS`.
 
 ```sh
 export SONARQUBE_URL=https://sonar.example.com SONARQUBE_TOKEN=...
@@ -135,13 +135,16 @@ rate limit.
 
 ### Verifying a release
 
-Each archive has a signed SLSA build provenance attestation and an SBOM
-attestation:
+Each archive has a signed SLSA build provenance attestation and a CycloneDX SBOM
+attestation, both issued by `.github/workflows/release.yml`:
 
 ```sh
-gh attestation verify sonarqube-cli_1.2.3_linux_amd64.tar.gz --repo muratcanozdemir/sonarqube-go-client
-gh attestation verify sonarqube-cli_1.2.3_linux_amd64.tar.gz --repo muratcanozdemir/sonarqube-go-client \
-  --predicate-type https://spdx.dev/Document/v2.3
+f=sonarqube-cli_0.1.0_linux_amd64.tar.gz
+gh attestation verify "$f" --repo muratcanozdemir/sonarqube-go-client \
+  --signer-workflow muratcanozdemir/sonarqube-go-client/.github/workflows/release.yml
+gh attestation verify "$f" --repo muratcanozdemir/sonarqube-go-client --predicate-type https://cyclonedx.org/bom
+# offline, with the bundle attached to the release:
+gh attestation verify "$f" --repo muratcanozdemir/sonarqube-go-client --bundle "$f.provenance.sigstore.json"
 sha256sum -c SHA256SUMS --ignore-missing
 ```
 
@@ -218,12 +221,16 @@ request shape. Each such case is documented inline.
 
   The 23 releases have 15 distinct API surfaces, so testing only those would
   save little; the full matrix runs once a week and before every release.
-- **Release** (`.github/workflows/release.yml`): release-please maintains a
-  release PR from Conventional Commits. Merging it tags `vX.Y.Z` and creates the
-  GitHub release; the workflow then builds the Linux x86-64 binary
-  reproducibly, generates SBOMs, attests SLSA provenance and the SBOM via
-  Sigstore, and uploads the assets. Set `RELEASE_PLEASE_TOKEN` (PAT or GitHub
-  App token) if CI should run on release PRs.
+- **Releases**: commit with [Conventional Commits](https://www.conventionalcommits.org/)
+  (`feat:`, `fix:`, `feat!:` …); other messages are ignored by release-please.
+  `.github/workflows/release-please.yml` keeps a release PR open on `main` that
+  bumps the version and writes `CHANGELOG.md`. Merging it tags `vX.Y.Z`, creates
+  the GitHub release and calls `.github/workflows/release.yml`. That workflow
+  tests the code, runs govulncheck, builds the Linux x86-64 binary reproducibly
+  with the latest patched Go, generates its CycloneDX SBOM, issues SLSA
+  provenance and SBOM attestations, verifies both, and attaches everything to
+  the release. Pushing a `v*` tag by hand runs the same workflow (`-rc` tags
+  become pre-releases).
 - Actions are pinned to commit SHAs; Dependabot keeps them and Go modules
   current.
 
