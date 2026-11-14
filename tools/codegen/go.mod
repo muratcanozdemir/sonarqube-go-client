@@ -1,6 +1,6 @@
 module github.com/muratcanozdemir/sonarqube-go-client/tools/codegen
 
-go 1.26.6
+go 1.26.0
 
 require github.com/xuri/excelize/v2 v2.11.1
 

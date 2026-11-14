@@ -202,9 +202,10 @@ request shape. Each such case is documented inline.
 
 - **CI** (`.github/workflows/ci.yml`, every push/PR, a few minutes): generated-code
   drift check, gofmt, vet, golangci-lint, unit tests with race detector and a
-  100% library-coverage gate, and a SonarQube scan. The scan needs the
-  `SONAR_TOKEN` secret and the `SONAR_HOST_URL` variable; it is skipped with a
-  warning when they are absent.
+  100% library-coverage gate, and a SonarQube Cloud analysis that waits for
+  the quality gate. It needs the `SONAR_TOKEN` secret and the
+  `SONAR_ORGANIZATION` variable (set `SONAR_HOST_URL` to use another server);
+  without a token the step is skipped.
 - **Integration** (`.github/workflows/integration.yml`): each job boots a real
   server, so runs are tiered by cost:
 
