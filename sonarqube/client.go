@@ -27,7 +27,7 @@ import (
 )
 
 // Version is the version of this library. It is updated by release-please.
-const Version = "1.0.0" // x-release-please-version
+const Version = "1.0.1" // x-release-please-version
 
 const defaultUserAgent = "sonarqube-go-client/" + Version
 
