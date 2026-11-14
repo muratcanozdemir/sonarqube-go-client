@@ -1,0 +1,96 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    outputs:
+      created: ${{ steps.rp.outputs.release_created }}
+      tag: ${{ steps.rp.outputs.tag_name }}
+      version: ${{ steps.rp.outputs.version }}
+    steps:
+      - id: rp
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          # A PAT or GitHub App token lets CI run on the release PR; the
+          # default GITHUB_TOKEN works but does not trigger other workflows.
+          token: ${{ secrets.RELEASE_PLEASE_TOKEN || github.token }}
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  binaries:
+    needs: release-please
+    if: needs.release-please.outputs.created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write      # upload release assets
+      id-token: write      # Sigstore signing for attestations
+      attestations: write  # store attestations
+    env:
+      TAG: ${{ needs.release-please.outputs.tag }}
+      VERSION: ${{ needs.release-please.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.release-please.outputs.tag }}
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Build linux/amd64
+        env:
+          CGO_ENABLED: "0"
+          GOOS: linux
+          GOARCH: amd64
+        run: |
+          name="sonarqube-cli_${VERSION}_linux_amd64"
+          mkdir -p "dist/$name"
+          go build -trimpath -ldflags "-s -w -X main.version=${VERSION}" -o "dist/$name/sonarqube-cli" ./cmd/sonarqube-cli
+          for f in LICENSE README.md CHANGELOG.md; do [ -f "$f" ] && cp "$f" "dist/$name/"; done
+          # Reproducible archive: fixed mtime/owner, sorted entries.
+          tar --sort=name --mtime="@$(git log -1 --format=%ct)" --owner=0 --group=0 --numeric-owner \
+            -C dist -czf "dist/$name.tar.gz" "$name"
+          echo "ARCHIVE=dist/$name.tar.gz" >> "$GITHUB_ENV"
+          echo "BINARY=dist/$name/sonarqube-cli" >> "$GITHUB_ENV"
+      - name: SBOM (SPDX and CycloneDX)
+        uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
+        with:
+          file: ${{ env.BINARY }}
+          format: spdx-json
+          output-file: dist/sonarqube-cli_${{ env.VERSION }}_linux_amd64.spdx.json
+          upload-artifact: false
+          upload-release-assets: false
+      - uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c # v0.24.3
+        with:
+          file: ${{ env.BINARY }}
+          format: cyclonedx-json
+          output-file: dist/sonarqube-cli_${{ env.VERSION }}_linux_amd64.cdx.json
+          upload-artifact: false
+          upload-release-assets: false
+      - name: Checksums
+        run: cd dist && sha256sum -- *.tar.gz *.spdx.json *.cdx.json > SHA256SUMS
+      - name: SLSA build provenance
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: |
+            ${{ env.ARCHIVE }}
+            ${{ env.BINARY }}
+      - name: SBOM attestation
+        uses: actions/attest-sbom@c604332985a26aa8cf1bdc465b92731239ec6b9e # v4.1.0
+        with:
+          subject-path: ${{ env.ARCHIVE }}
+          sbom-path: dist/sonarqube-cli_${{ env.VERSION }}_linux_amd64.spdx.json
+      - name: Upload release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload "$TAG" --clobber \
+            "$ARCHIVE" dist/*.spdx.json dist/*.cdx.json dist/SHA256SUMS

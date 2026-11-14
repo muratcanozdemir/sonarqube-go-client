@@ -1,0 +1,5 @@
+.it.env
+coverage.out
+test-report.json
+dist/
+*.broken

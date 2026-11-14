@@ -1,0 +1,7442 @@
+{
+ "components": {
+  "schemas": {
+   "ActiveRule": {
+    "properties": {
+     "createdAt": {
+      "type": "string"
+     },
+     "deprecatedKeys": {
+      "items": {
+       "$ref": "#/components/schemas/RuleKey"
+      },
+      "type": "array"
+     },
+     "impacts": {
+      "additionalProperties": {
+       "enum": [
+        "INFO",
+        "LOW",
+        "MEDIUM",
+        "HIGH",
+        "BLOCKER"
+       ],
+       "type": "string"
+      },
+      "type": "object"
+     },
+     "internalKey": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "language": {
+      "type": "string"
+     },
+     "name": {
+      "type": "string"
+     },
+     "params": {
+      "items": {
+       "$ref": "#/components/schemas/Param"
+      },
+      "type": "array"
+     },
+     "qProfileKey": {
+      "type": "string"
+     },
+     "ruleKey": {
+      "$ref": "#/components/schemas/RuleKey"
+     },
+     "severity": {
+      "type": "string"
+     },
+     "templateRuleKey": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "updatedAt": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "AffectedInstallationResource": {
+    "description": "A GitHub App installation that has not approved every permission the Remediation Agent requires. Only permissions the\napp itself requests appear here; a permission the app does not request is reported once in 'appMissingPermissions'\ninstead, because no installation owner can approve it. Suspension alone does not put an installation in this list.\n",
+    "properties": {
+     "installationId": {
+      "description": "Identifier of the GitHub App installation",
+      "readOnly": true,
+      "type": "string"
+     },
+     "installationOwner": {
+      "description": "Login of whoever the app is installed on. May be an organization or a personal account.",
+      "readOnly": true,
+      "type": "string"
+     },
+     "missingPermissions": {
+      "description": "Permissions this installation still has to approve",
+      "items": {
+       "$ref": "#/components/schemas/PermissionDeficitResource"
+      },
+      "readOnly": true,
+      "type": "array"
+     },
+     "settingsUrl": {
+      "description": "URL of the installation settings page, where the missing permissions can be approved",
+      "readOnly": true,
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "AgenticJobRestResponse": {
+    "properties": {
+     "analysisType": {
+      "enum": [
+       "FULL",
+       "INCREMENTAL"
+      ],
+      "readOnly": true,
+      "type": "string"
+     },
+     "branch": {
+      "readOnly": true,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "createdAt": {
+      "format": "int64",
+      "readOnly": true,
+      "type": "integer"
+     },
+     "errorKey": {
+      "description": "Stable customer-safe failure identifier. Only set when status is FAILED.",
+      "readOnly": true,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "failureReason": {
+      "deprecated": true,
+      "description": "Deprecated. Use errorKey instead.",
+      "readOnly": true,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "findingsCount": {
+      "format": "int32",
+      "readOnly": true,
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "finishedAt": {
+      "format": "int64",
+      "readOnly": true,
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "id": {
+      "readOnly": true,
+      "type": "string"
+     },
+     "projectId": {
+      "readOnly": true,
+      "type": "string"
+     },
+     "projectKey": {
+      "description": "Not set if the project has been deleted.",
+      "readOnly": true,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "projectName": {
+      "description": "Not set if the project has been deleted.",
+      "readOnly": true,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "repositoryUrl": {
+      "readOnly": true,
+      "type": "string"
+     },
+     "revision": {
+      "readOnly": true,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "startedAt": {
+      "format": "int64",
+      "readOnly": true,
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "status": {
+      "enum": [
+       "PENDING",
+       "IN_PROGRESS",
+       "COMPLETED",
+       "FAILED"
+      ],
+      "readOnly": true,
+      "type": "string"
+     },
+     "type": {
+      "enum": [
+       "HUNTER",
+       "REMEDIATION"
+      ],
+      "readOnly": true,
+      "type": "string"
+     },
+     "updatedAt": {
+      "format": "int64",
+      "readOnly": true,
+      "type": "integer"
+     },
+     "workflowType": {
+      "readOnly": true,
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "type": "object"
+   },
+   "AgenticJobsSearchRestResponse": {
+    "properties": {
+     "jobs": {
+      "items": {
+       "$ref": "#/components/schemas/AgenticJobRestResponse"
+      },
+      "type": "array"
+     },
+     "page": {
+      "$ref": "#/components/schemas/PageRestResponse"
+     }
+    },
+    "type": "object"
+   },
+   "AzureBillingRestResponse": {
+    "properties": {
+     "message": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "success": {
+      "type": "boolean"
+     }
+    },
+    "type": "object"
+   },
+   "BoundProjectCreateRestRequest": {
+    "properties": {
+     "devOpsPlatformSettingId": {
+      "description": "Identifier of DevOps platform configuration to use. Use /dop-translation/dop-settings to retrieve the settings and their ID",
+      "minLength": 1,
+      "type": "string"
+     },
+     "inlineAnnotationsEnabled": {
+      "description": "For Azure DevOps bindings only: enable/disable inline annotations during Pull Request decoration. When rebinding an existing project, omit to preserve the current value. Defaults to true on new bindings.",
+      "type": [
+       "boolean",
+       "null"
+      ]
+     },
+     "monorepo": {
+      "description": "True if project is part of a mono repo.",
+      "type": "boolean"
+     },
+     "newCodeDefinitionType": {
+      "description": "  Project New Code Definition Type\n  New code definitions of the following types are allowed:\n    - PREVIOUS_VERSION\n    - NUMBER_OF_DAYS\n    - REFERENCE_BRANCH - will default to the main branch.\n",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "newCodeDefinitionValue": {
+      "description": "  Project New Code Definition Value\n  For each new code definition type, a different value is expected:\n  - no value, when the new code definition type is PREVIOUS_VERSION and REFERENCE_BRANCH\n  - a number between 1 and 90, when the new code definition type is NUMBER_OF_DAYS\n",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "projectIdentifier": {
+      "description": "Identifier of the DevOps platform project in which the repository is located.\nThis is only needed for Azure and BitBucket Server platforms\n",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "projectKey": {
+      "description": "Key of the project to create",
+      "minLength": 1,
+      "type": "string"
+     },
+     "projectName": {
+      "description": "Name of the project to create",
+      "minLength": 1,
+      "type": "string"
+     },
+     "repositoryIdentifier": {
+      "description": "Identifier of the DevOps platform repository to import:\n- repository slug for GitHub and Bitbucket (Cloud and Server)\n- repository id for GitLab\n- repository name for Azure DevOps\n",
+      "minLength": 1,
+      "type": "string"
+     },
+     "summaryCommentEnabled": {
+      "description": "For GitHub bindings only: enable/disable posting the analysis summary as a Pull Request comment. When rebinding an existing project, omit to preserve the current value. Defaults to true on new bindings.",
+      "type": [
+       "boolean",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "devOpsPlatformSettingId",
+     "monorepo",
+     "projectKey",
+     "projectName",
+     "repositoryIdentifier"
+    ],
+    "type": "object"
+   },
+   "BoundProjectCreateRestResponse": {
+    "properties": {
+     "bindingId": {
+      "description": "The identifier of the binding between the created project and the DevOps platform project",
+      "type": "string"
+     },
+     "newProjectCreated": {
+      "description": "True if a new project was created, false if an existing project was bound",
+      "type": "boolean"
+     },
+     "projectId": {
+      "description": "The identifier of the created project",
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "BuiltInDashboardItem": {
+    "properties": {
+     "description": {
+      "maxLength": 500,
+      "minLength": 0,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "key": {
+      "type": "string"
+     },
+     "name": {
+      "maxLength": 300,
+      "minLength": 1,
+      "type": "string"
+     },
+     "resourceType": {
+      "enum": [
+       "project",
+       "portfolio"
+      ],
+      "type": "string"
+     },
+     "updatedAt": {
+      "format": "int64",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "key",
+     "name",
+     "resourceType",
+     "updatedAt"
+    ],
+    "type": "object"
+   },
+   "BuiltInDashboardResponse": {
+    "properties": {
+     "description": {
+      "maxLength": 500,
+      "minLength": 0,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "key": {
+      "type": "string"
+     },
+     "layout": {
+      "type": "string"
+     },
+     "name": {
+      "maxLength": 300,
+      "minLength": 1,
+      "type": "string"
+     },
+     "resourceType": {
+      "enum": [
+       "project",
+       "portfolio"
+      ],
+      "type": "string"
+     },
+     "updatedAt": {
+      "format": "int64",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "key",
+     "layout",
+     "name",
+     "resourceType",
+     "updatedAt"
+    ],
+    "type": "object"
+   },
+   "BuiltInDashboardsResponse": {
+    "properties": {
+     "dashboards": {
+      "items": {
+       "$ref": "#/components/schemas/BuiltInDashboardItem"
+      },
+      "type": "array"
+     },
+     "page": {
+      "$ref": "#/components/schemas/DashboardPage"
+     }
+    },
+    "required": [
+     "dashboards",
+     "page"
+    ],
+    "type": "object"
+   },
+   "DashboardPage": {
+    "properties": {
+     "pageIndex": {
+      "format": "int32",
+      "type": "integer"
+     },
+     "pageSize": {
+      "format": "int32",
+      "type": "integer"
+     },
+     "total": {
+      "format": "int32",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "pageIndex",
+     "pageSize",
+     "total"
+    ],
+    "type": "object"
+   },
+   "DatabaseMigrationsResponse": {
+    "properties": {
+     "completedSteps": {
+      "format": "int32",
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "expectedFinishTimestamp": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "message": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "startedAt": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "status": {
+      "type": "string"
+     },
+     "totalSteps": {
+      "format": "int32",
+      "type": [
+       "integer",
+       "null"
+      ]
+     }
+    },
+    "type": "object"
+   },
+   "DevopsPlatforms": {
+    "properties": {
+     "shares": {
+      "items": {
+       "$ref": "#/components/schemas/PlatformShare"
+      },
+      "type": "array"
+     },
+     "total": {
+      "format": "int64",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "shares",
+     "total"
+    ],
+    "type": "object"
+   },
+   "DevopsPlatformsStep": {
+    "properties": {
+     "configured": {
+      "format": "int64",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "configured"
+    ],
+    "type": "object"
+   },
+   "DopSettingsResource": {
+    "properties": {
+     "appId": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "id": {
+      "readOnly": true,
+      "type": "string"
+     },
+     "key": {
+      "type": "string"
+     },
+     "type": {
+      "description": "Supported DevOps Platform are: github, gitlab, azure, bitbucketcloud, bitbucket_server",
+      "type": "string"
+     },
+     "url": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "type": "object"
+   },
+   "DopSettingsRestResponse": {
+    "properties": {
+     "dopSettings": {
+      "items": {
+       "$ref": "#/components/schemas/DopSettingsResource"
+      },
+      "type": "array"
+     },
+     "page": {
+      "$ref": "#/components/schemas/PageRestResponse"
+     }
+    },
+    "type": "object"
+   },
+   "EmailConfigurationCreateRestRequest": {
+    "properties": {
+     "authMethod": {
+      "description": "Authentication method used to connect to the SMTP server. OAuth is only supported for Microsoft Exchange",
+      "enum": [
+       "BASIC",
+       "OAUTH"
+      ],
+      "type": "string"
+     },
+     "basicPassword": {
+      "description": "For basic authentication: password used to authenticate to the SMTP server",
+      "type": [
+       "string",
+       "null"
+      ],
+      "writeOnly": true
+     },
+     "fromAddress": {
+      "description": "Address emails will come from",
+      "minLength": 1,
+      "type": "string"
+     },
+     "fromName": {
+      "description": "Name emails will come from (usually \"SonarQube\")",
+      "minLength": 1,
+      "type": "string"
+     },
+     "host": {
+      "description": "URL of your SMTP server",
+      "minLength": 1,
+      "type": "string"
+     },
+     "oauthAuthenticationHost": {
+      "description": "For OAuth authentication: host of the Identity Provider issuing access tokens",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "oauthClientId": {
+      "description": "For OAuth authentication: Client ID provided by Microsoft Exchange when registering the application",
+      "type": [
+       "string",
+       "null"
+      ],
+      "writeOnly": true
+     },
+     "oauthClientSecret": {
+      "description": "For OAuth authentication: Client secret provided by Microsoft Exchange when registering the application",
+      "type": [
+       "string",
+       "null"
+      ],
+      "writeOnly": true
+     },
+     "oauthScope": {
+      "description": "For OAuth authentication: scope for the OAuth token request. Defaults to 'https://outlook.office365.com/.default'",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "oauthTenant": {
+      "description": "For OAuth authentication: Microsoft tenant",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "port": {
+      "description": "Port of your SMTP server (usually 25, 587 or 465)",
+      "minLength": 1,
+      "type": "string"
+     },
+     "securityProtocol": {
+      "description": "Security protocol used to connect to your SMTP server (SSLTLS is recommended)",
+      "enum": [
+       "NONE",
+       "SSLTLS",
+       "STARTTLS"
+      ],
+      "type": "string"
+     },
+     "subjectPrefix": {
+      "description": "Prefix added to email so they can be easily recognized (usually \"[SonarQube]\")",
+      "minLength": 1,
+      "type": "string"
+     },
+     "username": {
+      "description": "For Basic and OAuth authentication: username used to authenticate to the SMTP server",
+      "minLength": 1,
+      "type": "string"
+     }
+    },
+    "required": [
+     "authMethod",
+     "fromAddress",
+     "fromName",
+     "host",
+     "port",
+     "securityProtocol",
+     "subjectPrefix",
+     "username"
+    ],
+    "type": "object"
+   },
+   "EmailConfigurationResource": {
+    "properties": {
+     "authMethod": {
+      "description": "Authentication method used to connect to the SMTP server. OAuth is only supported for Microsoft Exchange",
+      "enum": [
+       "BASIC",
+       "OAUTH"
+      ],
+      "type": "string"
+     },
+     "fromAddress": {
+      "description": "Address emails will come from",
+      "type": "string"
+     },
+     "fromName": {
+      "description": "Name emails will come from (usually \"SonarQube\")",
+      "type": "string"
+     },
+     "host": {
+      "description": "URL of your SMTP server",
+      "type": "string"
+     },
+     "id": {
+      "readOnly": true,
+      "type": "string"
+     },
+     "isBasicPasswordSet": {
+      "description": "For Basic authentication: has the password field been set?",
+      "type": "boolean"
+     },
+     "isOauthClientIdSet": {
+      "description": "For OAuth authentication: has the Client ID field been set?",
+      "type": "boolean"
+     },
+     "isOauthClientSecretSet": {
+      "description": "For OAuth authentication: has the Client secret field been set?",
+      "type": "boolean"
+     },
+     "oauthAuthenticationHost": {
+      "description": "For OAuth authentication: host of the Identity Provider issuing access tokens",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "oauthScope": {
+      "description": "For OAuth authentication: scope for the OAuth token request",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "oauthTenant": {
+      "description": "For OAuth authentication: Microsoft tenant",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "port": {
+      "description": "Port of your SMTP server (usually 25, 587 or 465)",
+      "type": "string"
+     },
+     "securityProtocol": {
+      "description": "Security protocol used to connect to your SMTP server (SSLTLS is recommended)",
+      "enum": [
+       "NONE",
+       "SSLTLS",
+       "STARTTLS"
+      ],
+      "type": "string"
+     },
+     "subjectPrefix": {
+      "description": "Prefix added to email so they can be easily recognized (usually \"[SonarQube]\")",
+      "type": "string"
+     },
+     "username": {
+      "description": "For Basic and OAuth authentication: username used to authenticate to the SMTP server",
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "type": "object"
+   },
+   "EmailConfigurationSearchRestResponse": {
+    "properties": {
+     "emailConfigurations": {
+      "items": {
+       "$ref": "#/components/schemas/EmailConfigurationResource"
+      },
+      "type": "array"
+     },
+     "page": {
+      "$ref": "#/components/schemas/PageRestResponse"
+     }
+    },
+    "type": "object"
+   },
+   "EmailConfigurationUpdateRestRequest": {
+    "properties": {
+     "authMethod": {
+      "description": "Authentication method used to connect to the SMTP server. OAuth is only supported for Microsoft Exchange",
+      "enum": [
+       "BASIC",
+       "OAUTH"
+      ],
+      "type": "string"
+     },
+     "basicPassword": {
+      "description": "For basic authentication: password used to authenticate to the SMTP server",
+      "type": "string"
+     },
+     "fromAddress": {
+      "description": "Address emails will come from",
+      "type": "string"
+     },
+     "fromName": {
+      "description": "Name emails will come from (usually \"SonarQube\")",
+      "type": "string"
+     },
+     "host": {
+      "description": "URL of your SMTP server",
+      "type": "string"
+     },
+     "oauthAuthenticationHost": {
+      "description": "For OAuth authentication: host of the Identity Provider issuing access tokens",
+      "type": "string"
+     },
+     "oauthClientId": {
+      "description": "For OAuth authentication: Client ID provided by Microsoft Exchange when registering the application",
+      "type": "string"
+     },
+     "oauthClientSecret": {
+      "description": "For OAuth authentication: Client password provided by Microsoft Exchange when registering the application",
+      "type": "string"
+     },
+     "oauthScope": {
+      "description": "For OAuth authentication: scope for the OAuth token request",
+      "type": "string"
+     },
+     "oauthTenant": {
+      "description": "For OAuth authentication: Microsoft tenant",
+      "type": "string"
+     },
+     "port": {
+      "description": "Port of your SMTP server (usually 25, 587 or 465)",
+      "type": "string"
+     },
+     "securityProtocol": {
+      "description": "Security protocol used to connect to your SMTP server (SSLTLS is recommended)",
+      "enum": [
+       "NONE",
+       "SSLTLS",
+       "STARTTLS"
+      ],
+      "type": "string"
+     },
+     "subjectPrefix": {
+      "description": "Prefix added to email so they can be easily recognized (usually \"[SonarQube]\")",
+      "type": "string"
+     },
+     "username": {
+      "description": "For Basic and OAuth authentication: username used to authenticate to the SMTP server",
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "EngineInfoRestResponse": {
+    "properties": {
+     "filename": {
+      "type": "string"
+     },
+     "sha256": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "ErrorResponse": {
+    "properties": {
+     "message": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "message"
+    ],
+    "type": "object"
+   },
+   "GithubConfigurationCreateRestRequest": {
+    "properties": {
+     "allowUsersToSignUp": {
+      "description": "Allow user to sign up",
+      "type": [
+       "boolean",
+       "null"
+      ]
+     },
+     "allowedOrganizations": {
+      "description": "Only members of these organizations will be able to authenticate to the server.\n\u26a0 if not set, users from any organization where the GitHub App is installed will be able to login to this SonarQube instance.\n",
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     "apiUrl": {
+      "description": "The API url for a GitHub instance. https://api.github.com/ for Github.com, https://github.company.com/api/v3/ when using Github Enterprise",
+      "minLength": 1,
+      "type": "string"
+     },
+     "applicationId": {
+      "description": "The App ID is found on your GitHub App's page on GitHub at Settings > Developer Settings > GitHub Apps.",
+      "minLength": 1,
+      "type": "string"
+     },
+     "clientId": {
+      "description": "Client ID provided by GitHub when registering the application.",
+      "minLength": 1,
+      "type": "string",
+      "writeOnly": true
+     },
+     "clientSecret": {
+      "description": "Client password provided by GitHub when registering the application.",
+      "minLength": 1,
+      "type": "string",
+      "writeOnly": true
+     },
+     "enabled": {
+      "description": "Enable GitHub authentication",
+      "type": "boolean"
+     },
+     "privateKey": {
+      "description": "Your GitHub App's private key. You can generate a .pem file from your GitHub App's page under Private keys.\nCopy and paste the whole contents of the file here.\n",
+      "minLength": 1,
+      "type": "string",
+      "writeOnly": true
+     },
+     "projectVisibility": {
+      "description": "Change project visibility based on GitHub repository visibility.\nIf disabled, every provisioned project will be private in SonarQube and visible only to users with explicit GitHub permissions for the corresponding repository.\nChanges take effect at the next synchronization.\n",
+      "type": [
+       "boolean",
+       "null"
+      ]
+     },
+     "provisioningType": {
+      "description": "Type of synchronization",
+      "enum": [
+       "JIT",
+       "AUTO_PROVISIONING"
+      ],
+      "type": "string"
+     },
+     "synchronizeGroups": {
+      "description": "Synchronize GitHub team with SonarQube group memberships when users log in to SonarQube.\nFor each GitHub team they belong to, users will be associated to a group of the same name if it exists in SonarQube.\n",
+      "type": "boolean"
+     },
+     "userConsentRequiredAfterUpgrade": {
+      "description": "Admin consent to synchronize permissions from GitHub",
+      "type": [
+       "boolean",
+       "null"
+      ]
+     },
+     "webUrl": {
+      "description": "The WEB url for a GitHub instance. https://github.com/ for Github.com, https://github.company.com/ when using GitHub Enterprise.\n",
+      "minLength": 1,
+      "type": "string"
+     }
+    },
+    "required": [
+     "allowedOrganizations",
+     "apiUrl",
+     "applicationId",
+     "clientId",
+     "clientSecret",
+     "enabled",
+     "privateKey",
+     "provisioningType",
+     "synchronizeGroups",
+     "webUrl"
+    ],
+    "type": "object"
+   },
+   "GithubConfigurationResource": {
+    "properties": {
+     "allowUsersToSignUp": {
+      "type": "boolean"
+     },
+     "allowedOrganizations": {
+      "description": "GitHub organizations allowed to authenticate and provisioned",
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     "apiUrl": {
+      "description": "Url of GitHub instance for API connectivity (for instance https://api.github.com)",
+      "type": "string"
+     },
+     "applicationId": {
+      "description": "GitHub Application id",
+      "type": "string"
+     },
+     "enabled": {
+      "type": "boolean"
+     },
+     "errorMessage": {
+      "description": "In case the GitHub configuration is incorrect, error message",
+      "readOnly": true,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "id": {
+      "readOnly": true,
+      "type": "string"
+     },
+     "projectVisibility": {
+      "type": "boolean"
+     },
+     "provisioningType": {
+      "enum": [
+       "JIT",
+       "AUTO_PROVISIONING"
+      ],
+      "type": "string"
+     },
+     "synchronizeGroups": {
+      "type": "boolean"
+     },
+     "userConsentRequiredAfterUpgrade": {
+      "type": "boolean"
+     },
+     "webUrl": {
+      "description": "Url of GitHub instance for authentication (for instance https://github.com)",
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "GithubConfigurationSearchRestResponse": {
+    "properties": {
+     "githubConfigurations": {
+      "items": {
+       "$ref": "#/components/schemas/GithubConfigurationResource"
+      },
+      "type": "array"
+     },
+     "page": {
+      "$ref": "#/components/schemas/PageRestResponse"
+     }
+    },
+    "type": "object"
+   },
+   "GithubConfigurationUpdateRestRequest": {
+    "properties": {
+     "allowUsersToSignUp": {
+      "description": "Allow user to sign up",
+      "type": "boolean"
+     },
+     "allowedOrganizations": {
+      "$ref": "#/components/schemas/UpdateFieldListString",
+      "description": "GitHub organizations allowed to authenticate and provisioned",
+      "items": {
+       "type": "string"
+      }
+     },
+     "apiUrl": {
+      "description": "Url of GitHub instance for API connectivity (for instance https://api.github.com)",
+      "type": "string"
+     },
+     "applicationId": {
+      "description": "GitHub Application id",
+      "type": "string"
+     },
+     "clientId": {
+      "description": "GitHub Client ID",
+      "type": "string"
+     },
+     "clientSecret": {
+      "description": "GitHub Client secret",
+      "type": "string"
+     },
+     "enabled": {
+      "description": "Enable GitHub authentication",
+      "type": "boolean"
+     },
+     "privateKey": {
+      "description": "GitHub Private key",
+      "type": "string"
+     },
+     "projectVisibility": {
+      "description": "Sync project visibility",
+      "type": "boolean"
+     },
+     "provisioningType": {
+      "description": "Type of synchronization",
+      "enum": [
+       "JIT",
+       "AUTO_PROVISIONING"
+      ],
+      "type": "string"
+     },
+     "synchronizeGroups": {
+      "description": "Set whether to synchronize groups",
+      "type": "boolean"
+     },
+     "userConsentRequiredAfterUpgrade": {
+      "description": "Admin consent to synchronize permissions from GitHub",
+      "type": "boolean"
+     },
+     "webUrl": {
+      "description": "Url of GitHub instance for authentication (for instance https://github.com)",
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "GithubInstallationTokenRestResponse": {
+    "properties": {
+     "expiresAt": {
+      "type": "string"
+     },
+     "token": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "GitlabConfigurationCreateRestRequest": {
+    "properties": {
+     "allowAllGroups": {
+      "description": "When true with Auto-provisioning, every group visible to the provisioning token is provisioned and the allowedGroups list is ignored. Has no effect with Just-in-Time provisioning. Security risk: any user belonging to any group accessible by the provisioning token will be granted access. Restrict access using allowedGroups unless broad access is intentional. Not supported on GitLab.com (SaaS): the request is rejected when the configured URL is gitlab.com, since the provisioning token may have visibility into a much larger and unbounded set of groups. Performance note: login may be slower for users belonging to a large number of groups, as all their groups must be fetched from GitLab on every authentication.",
+      "type": [
+       "boolean",
+       "null"
+      ]
+     },
+     "allowUsersToSignUp": {
+      "description": "Allow user to sign up",
+      "type": [
+       "boolean",
+       "null"
+      ]
+     },
+     "allowedGroups": {
+      "description": "GitLab groups allowed to authenticate.\nSubgroups will automatically be included.\nWhen Auto-provisioning is enabled, members of these groups will be automatically provisioned in SonarQube.\nThis field is required to be non-empty for Auto-provisioning unless allowAllGroups is true.\nIgnored when allowAllGroups is true.\n",
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     "applicationId": {
+      "description": "Gitlab Application id",
+      "minLength": 1,
+      "type": "string"
+     },
+     "enabled": {
+      "description": "Enable Gitlab authentication",
+      "type": "boolean"
+     },
+     "provisioningToken": {
+      "description": "Gitlab token for provisioning",
+      "type": [
+       "string",
+       "null"
+      ],
+      "writeOnly": true
+     },
+     "provisioningType": {
+      "description": "Type of synchronization",
+      "enum": [
+       "JIT",
+       "AUTO_PROVISIONING"
+      ],
+      "type": "string"
+     },
+     "secret": {
+      "description": "Secret of the application",
+      "minLength": 1,
+      "type": "string",
+      "writeOnly": true
+     },
+     "synchronizeGroups": {
+      "description": "Set whether to synchronize groups",
+      "type": "boolean"
+     },
+     "url": {
+      "description": "Url of Gitlab instance for authentication (for instance https://gitlab.com)",
+      "minLength": 1,
+      "type": "string"
+     }
+    },
+    "required": [
+     "allowedGroups",
+     "applicationId",
+     "enabled",
+     "provisioningType",
+     "secret",
+     "synchronizeGroups",
+     "url"
+    ],
+    "type": "object"
+   },
+   "GitlabConfigurationRestResponseForAdmins": {
+    "properties": {
+     "allowAllGroups": {
+      "description": "When true with Auto-provisioning, every group visible to the provisioning token is provisioned and the allowedGroups list is ignored. Has no effect with Just-in-Time provisioning. Security risk: any user belonging to any group accessible by the provisioning token will be granted access. Restrict access using allowedGroups unless broad access is intentional. Not supported on GitLab.com (SaaS): the request is rejected when the configured URL is gitlab.com, since the provisioning token may have visibility into a much larger and unbounded set of groups. Performance note: login may be slower for users belonging to a large number of groups, as all their groups must be fetched from GitLab on every authentication.",
+      "type": "boolean"
+     },
+     "allowUsersToSignUp": {
+      "type": "boolean"
+     },
+     "allowedGroups": {
+      "description": "Root Gitlab groups allowed to authenticate and provisioned. Ignored when allowAllGroups is true.",
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     "applicationId": {
+      "description": "Gitlab Application id",
+      "type": "string"
+     },
+     "enabled": {
+      "type": "boolean"
+     },
+     "errorMessage": {
+      "description": "In case the GitLab configuration is incorrect, error message",
+      "readOnly": true,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "id": {
+      "readOnly": true,
+      "type": "string"
+     },
+     "isProvisioningTokenSet": {
+      "description": "Whether or not the provisioningToken is defined",
+      "readOnly": true,
+      "type": "boolean"
+     },
+     "provisioningType": {
+      "enum": [
+       "JIT",
+       "AUTO_PROVISIONING"
+      ],
+      "type": "string"
+     },
+     "synchronizeGroups": {
+      "type": "boolean"
+     },
+     "url": {
+      "description": "Url of Gitlab instance for authentication (for instance https://gitlab.com/api/v4)",
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "GitlabConfigurationSearchRestResponse": {
+    "properties": {
+     "gitlabConfigurations": {
+      "items": {
+       "$ref": "#/components/schemas/GitlabConfigurationRestResponseForAdmins"
+      },
+      "type": "array"
+     },
+     "page": {
+      "$ref": "#/components/schemas/PageRestResponse"
+     }
+    },
+    "type": "object"
+   },
+   "GitlabConfigurationUpdateRestRequest": {
+    "properties": {
+     "allowAllGroups": {
+      "description": "When true with Auto-provisioning, every group visible to the provisioning token is provisioned and the allowedGroups list is ignored. Has no effect with Just-in-Time provisioning. Security risk: any user belonging to any group accessible by the provisioning token will be granted access. Restrict access using allowedGroups unless broad access is intentional. Not supported on GitLab.com (SaaS): the request is rejected when the configured URL is gitlab.com, since the provisioning token may have visibility into a much larger and unbounded set of groups. Performance note: login may be slower for users belonging to a large number of groups, as all their groups must be fetched from GitLab on every authentication.",
+      "type": "boolean"
+     },
+     "allowUsersToSignUp": {
+      "description": "Allow user to sign up",
+      "type": "boolean"
+     },
+     "allowedGroups": {
+      "$ref": "#/components/schemas/UpdateFieldListString",
+      "description": "Root Gitlab groups allowed to authenticate and provisioned. Ignored when allowAllGroups is true.",
+      "items": {
+       "type": "string"
+      }
+     },
+     "applicationId": {
+      "description": "Gitlab Application id",
+      "type": "string"
+     },
+     "enabled": {
+      "description": "Enable Gitlab authentication",
+      "type": "boolean"
+     },
+     "provisioningToken": {
+      "description": "Gitlab token for provisioning",
+      "maxLength": 2147483647,
+      "minLength": 1,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "provisioningType": {
+      "description": "Type of synchronization",
+      "enum": [
+       "JIT",
+       "AUTO_PROVISIONING"
+      ],
+      "type": "string"
+     },
+     "secret": {
+      "description": "Secret of the application",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "synchronizeGroups": {
+      "description": "Set whether to synchronize groups",
+      "type": "boolean"
+     },
+     "url": {
+      "description": "Url of Gitlab instance for authentication (for instance https://gitlab.com/api/v4)",
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "GroupCreateRestRequest": {
+    "properties": {
+     "description": {
+      "description": "Description for the new group.",
+      "maxLength": 200,
+      "minLength": 0,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "name": {
+      "description": "Name for the new group. Must be unique. The value 'anyone' is reserved and cannot be used.",
+      "maxLength": 255,
+      "minLength": 1,
+      "type": "string"
+     }
+    },
+    "required": [
+     "name"
+    ],
+    "type": "object"
+   },
+   "GroupMembershipCreateRestRequest": {
+    "properties": {
+     "groupId": {
+      "description": "ID of the group where a member needs to be added.",
+      "type": "string"
+     },
+     "userId": {
+      "description": "ID of the user to add to group.",
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "GroupMembershipRestResponse": {
+    "properties": {
+     "groupId": {
+      "readOnly": true,
+      "type": "string"
+     },
+     "id": {
+      "readOnly": true,
+      "type": "string"
+     },
+     "userId": {
+      "readOnly": true,
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "GroupRestResponse": {
+    "properties": {
+     "default": {
+      "readOnly": true,
+      "type": "boolean"
+     },
+     "description": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "id": {
+      "readOnly": true,
+      "type": "string"
+     },
+     "managed": {
+      "readOnly": true,
+      "type": "boolean"
+     },
+     "name": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "GroupUpdateRestRequest": {
+    "properties": {
+     "description": {
+      "description": "Description of the group",
+      "maxLength": 200,
+      "minLength": 0,
+      "type": "string"
+     },
+     "name": {
+      "description": "Group name",
+      "maxLength": 255,
+      "minLength": 1,
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "GroupsMembershipSearchRestResponse": {
+    "properties": {
+     "groupMemberships": {
+      "items": {
+       "$ref": "#/components/schemas/GroupMembershipRestResponse"
+      },
+      "type": "array"
+     },
+     "page": {
+      "$ref": "#/components/schemas/PageRestResponse"
+     }
+    },
+    "type": "object"
+   },
+   "GroupsSearchRestResponse": {
+    "properties": {
+     "groups": {
+      "items": {
+       "$ref": "#/components/schemas/GroupRestResponse"
+      },
+      "type": "array"
+     },
+     "page": {
+      "$ref": "#/components/schemas/PageRestResponse"
+     }
+    },
+    "type": "object"
+   },
+   "Health": {
+    "properties": {
+     "causes": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "uniqueItems": true
+     },
+     "status": {
+      "enum": [
+       "GREEN",
+       "YELLOW",
+       "RED"
+      ],
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "Impact": {
+    "properties": {
+     "severity": {
+      "enum": [
+       "INFO",
+       "LOW",
+       "MEDIUM",
+       "HIGH",
+       "BLOCKER"
+      ],
+      "type": "string"
+     },
+     "softwareQuality": {
+      "enum": [
+       "MAINTAINABILITY",
+       "RELIABILITY",
+       "SECURITY"
+      ],
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "IssueCountDistribution": {
+    "properties": {
+     "key": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "value": {
+      "format": "int32",
+      "type": [
+       "integer",
+       "null"
+      ]
+     }
+    },
+    "type": "object"
+   },
+   "IssueCountHistory": {
+    "properties": {
+     "date": {
+      "description": "Date and time in ISO 8601 format, including timezone offset",
+      "example": "2024-01-01T12:00Z",
+      "format": "date-time",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "distribution": {
+      "items": {
+       "$ref": "#/components/schemas/IssueCountDistribution"
+      },
+      "type": "array"
+     }
+    },
+    "type": "object"
+   },
+   "IssueCountHistoryResponse": {
+    "properties": {
+     "issueCountHistory": {
+      "items": {
+       "$ref": "#/components/schemas/IssueCountHistory"
+      },
+      "type": "array"
+     }
+    },
+    "type": "object"
+   },
+   "IssueDensityDistribution": {
+    "properties": {
+     "key": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "value": {
+      "format": "double",
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    },
+    "type": "object"
+   },
+   "IssueDensityHistory": {
+    "properties": {
+     "date": {
+      "description": "Date and time in ISO 8601 format, including timezone offset",
+      "example": "2024-01-01T12:00Z",
+      "format": "date-time",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "distribution": {
+      "items": {
+       "$ref": "#/components/schemas/IssueDensityDistribution"
+      },
+      "type": "array"
+     }
+    },
+    "type": "object"
+   },
+   "IssueDensityHistoryResponse": {
+    "properties": {
+     "issueDensityHistory": {
+      "items": {
+       "$ref": "#/components/schemas/IssueDensityHistory"
+      },
+      "type": "array"
+     }
+    },
+    "type": "object"
+   },
+   "IssueResolutionDistribution": {
+    "properties": {
+     "key": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "value": {
+      "format": "int32",
+      "type": [
+       "integer",
+       "null"
+      ]
+     }
+    },
+    "type": "object"
+   },
+   "IssueResolutionHistory": {
+    "properties": {
+     "date": {
+      "description": "Date and time in ISO 8601 format, including timezone offset",
+      "example": "2024-01-01T12:00Z",
+      "format": "date-time",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "distribution": {
+      "items": {
+       "$ref": "#/components/schemas/IssueResolutionDistribution"
+      },
+      "type": "array"
+     }
+    },
+    "type": "object"
+   },
+   "IssueResolutionHistoryResponse": {
+    "properties": {
+     "issueResolutionHistory": {
+      "items": {
+       "$ref": "#/components/schemas/IssueResolutionHistory"
+      },
+      "type": "array"
+     },
+     "statistic": {
+      "enum": [
+       "MTTR",
+       "RECENT_MTTR",
+       "RESOLVED_ISSUES"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "issueResolutionHistory",
+     "statistic"
+    ],
+    "type": "object"
+   },
+   "JreInfoRestResponse": {
+    "properties": {
+     "arch": {
+      "type": "string"
+     },
+     "filename": {
+      "type": "string"
+     },
+     "id": {
+      "type": "string"
+     },
+     "javaPath": {
+      "type": "string"
+     },
+     "os": {
+      "type": "string"
+     },
+     "sha256": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "MeasureHistoryEntry": {
+    "properties": {
+     "metric": {
+      "description": "Metric whose value is being recorded",
+      "example": "coverage",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "type": {
+      "description": "Type of value the measure contains",
+      "example": "PERCENT",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "value": {
+      "description": "Value of the measure",
+      "example": "81.2",
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "type": "object"
+   },
+   "MeasureHistoryItem": {
+    "properties": {
+     "date": {
+      "description": "The date the measures were taken",
+      "format": "date-time",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "measures": {
+      "items": {
+       "$ref": "#/components/schemas/MeasureHistoryEntry"
+      },
+      "type": "array"
+     }
+    },
+    "type": "object"
+   },
+   "MeasuresHistoryResponse": {
+    "properties": {
+     "measuresHistory": {
+      "items": {
+       "$ref": "#/components/schemas/MeasureHistoryItem"
+      },
+      "type": "array"
+     }
+    },
+    "type": "object"
+   },
+   "ModeResource": {
+    "properties": {
+     "mode": {
+      "enum": [
+       "MQR",
+       "STANDARD_EXPERIENCE"
+      ],
+      "type": "string"
+     },
+     "modified": {
+      "readOnly": true,
+      "type": "boolean"
+     }
+    },
+    "required": [
+     "mode"
+    ],
+    "type": "object"
+   },
+   "OnboardingOverviewResponse": {
+    "properties": {
+     "progressPct": {
+      "format": "double",
+      "type": "number"
+     },
+     "steps": {
+      "$ref": "#/components/schemas/OnboardingSteps"
+     }
+    },
+    "required": [
+     "progressPct",
+     "steps"
+    ],
+    "type": "object"
+   },
+   "OnboardingProjectRow": {
+    "properties": {
+     "alm": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "analysisMode": {
+      "enum": [
+       "CI",
+       "AUTOMATIC",
+       "NONE"
+      ],
+      "type": "string"
+     },
+     "key": {
+      "type": "string"
+     },
+     "lastScan": {
+      "format": "int64",
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "name": {
+      "type": "string"
+     },
+     "path": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "scanStatus": {
+      "enum": [
+       "SCANNED",
+       "NOT_SCANNED"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "analysisMode",
+     "key",
+     "name",
+     "scanStatus"
+    ],
+    "type": "object"
+   },
+   "OnboardingProjectsPage": {
+    "properties": {
+     "pageIndex": {
+      "format": "int32",
+      "type": "integer"
+     },
+     "pageSize": {
+      "format": "int32",
+      "type": "integer"
+     },
+     "total": {
+      "format": "int64",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "pageIndex",
+     "pageSize",
+     "total"
+    ],
+    "type": "object"
+   },
+   "OnboardingProjectsResponse": {
+    "properties": {
+     "page": {
+      "$ref": "#/components/schemas/OnboardingProjectsPage"
+     },
+     "projects": {
+      "items": {
+       "$ref": "#/components/schemas/OnboardingProjectRow"
+      },
+      "type": "array"
+     }
+    },
+    "required": [
+     "page",
+     "projects"
+    ],
+    "type": "object"
+   },
+   "OnboardingStatisticsResponse": {
+    "properties": {
+     "devopsPlatforms": {
+      "$ref": "#/components/schemas/DevopsPlatforms"
+     },
+     "discoveredTotal": {
+      "format": "int64",
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "timeline": {
+      "items": {
+       "$ref": "#/components/schemas/TimelinePoint"
+      },
+      "type": "array"
+     }
+    },
+    "required": [
+     "devopsPlatforms",
+     "timeline"
+    ],
+    "type": "object"
+   },
+   "OnboardingSteps": {
+    "properties": {
+     "devopsPlatforms": {
+      "$ref": "#/components/schemas/DevopsPlatformsStep"
+     },
+     "projects": {
+      "$ref": "#/components/schemas/ProjectsStep"
+     },
+     "repositories": {
+      "$ref": "#/components/schemas/RepositoriesStep"
+     }
+    },
+    "required": [
+     "devopsPlatforms",
+     "projects",
+     "repositories"
+    ],
+    "type": "object"
+   },
+   "PageRestResponse": {
+    "properties": {
+     "pageIndex": {
+      "format": "int32",
+      "type": "integer"
+     },
+     "pageSize": {
+      "format": "int32",
+      "type": "integer"
+     },
+     "total": {
+      "format": "int32",
+      "type": "integer"
+     }
+    },
+    "type": "object"
+   },
+   "Pagination": {
+    "properties": {
+     "pageIndex": {
+      "format": "int32",
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "pageSize": {
+      "format": "int32",
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "total": {
+      "format": "int64",
+      "type": [
+       "integer",
+       "null"
+      ]
+     }
+    },
+    "type": "object"
+   },
+   "Param": {
+    "properties": {
+     "key": {
+      "type": "string"
+     },
+     "value": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "Parameter": {
+    "properties": {
+     "defaultValue": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "htmlDescription": {
+      "readOnly": true,
+      "type": "string"
+     },
+     "key": {
+      "type": "string"
+     },
+     "type": {
+      "enum": [
+       "STRING",
+       "TEXT",
+       "BOOLEAN",
+       "INTEGER",
+       "FLOAT"
+      ],
+      "readOnly": true,
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "PermissionCheckResource": {
+    "properties": {
+     "affectedInstallationCount": {
+      "description": "GitHub administrator requests only. Exact number of installations with missing permissions. Omitted unless\n'installationCheckStatus' is COMPLETE.\n",
+      "format": "int32",
+      "readOnly": true,
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "affectedInstallations": {
+      "description": "GitHub administrator requests only. Every installation with missing permissions, in a stable order. Omitted unless\n'installationCheckStatus' is COMPLETE.\n",
+      "items": {
+       "$ref": "#/components/schemas/AffectedInstallationResource"
+      },
+      "readOnly": true,
+      "type": [
+       "array",
+       "null"
+      ]
+     },
+     "appMissingPermissions": {
+      "description": "GitHub only. Permissions that the GitHub App does not request. Add these permissions to the app before an\ninstallation can approve them. If the system cannot read the app configuration, 'status' is CHECK_FAILED. In this\ncase, an empty list means that no app permission result is available.\n",
+      "items": {
+       "$ref": "#/components/schemas/PermissionDeficitResource"
+      },
+      "readOnly": true,
+      "type": [
+       "array",
+       "null"
+      ]
+     },
+     "checkedAt": {
+      "description": "Epoch milliseconds when this status was last computed. May reflect a cached result.",
+      "format": "int64",
+      "readOnly": true,
+      "type": "integer"
+     },
+     "installationCheckStatus": {
+      "description": "GitHub only. Whether the per-installation scan produced a trustworthy answer. The counts and the list are\nauthoritative only when this is COMPLETE. On a project request, NOT_INSTALLED means the app is not installed on\nthat project's repository \u2014 a definite answer, unlike FAILED. NOT_RUN means that the system did not check an\ninstallation because the project has no bound repository. In this case, 'status' covers only the app configuration.\n",
+      "enum": [
+       "COMPLETE",
+       "FAILED",
+       "NOT_INSTALLED",
+       "NOT_RUN"
+      ],
+      "readOnly": true,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "key": {
+      "description": "Key of the DevOps Platform configuration",
+      "readOnly": true,
+      "type": "string"
+     },
+     "status": {
+      "description": "Whether the configuration grants the write permissions the Remediation Agent needs to clone and open pull requests",
+      "enum": [
+       "SUFFICIENT",
+       "INSUFFICIENT",
+       "UNKNOWN",
+       "CHECK_FAILED",
+       "UNSUPPORTED_TOKEN_TYPE"
+      ],
+      "type": "string"
+     },
+     "totalInstallationCount": {
+      "description": "GitHub administrator requests only. How many installations the app has at all. Tells an app nobody has installed\napart from an app whose installations have all approved, which both report zero affected installations. Omitted\nunless 'installationCheckStatus' is COMPLETE.\n",
+      "format": "int32",
+      "readOnly": true,
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "type": {
+      "description": "DevOps Platform type of the configuration (github, gitlab, azure)",
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "PermissionChecksRestResponse": {
+    "properties": {
+     "permissionChecks": {
+      "items": {
+       "$ref": "#/components/schemas/PermissionCheckResource"
+      },
+      "type": "array"
+     }
+    },
+    "type": "object"
+   },
+   "PermissionDeficitResource": {
+    "description": "A permission the Remediation Agent requires that is not granted at the level it needs",
+    "properties": {
+     "granted": {
+      "description": "Access level actually granted, or null when the permission is not granted at all",
+      "readOnly": true,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "permission": {
+      "description": "Name of the DevOps Platform permission, e.g. 'contents'",
+      "readOnly": true,
+      "type": "string"
+     },
+     "required": {
+      "description": "Access level the Remediation Agent requires, e.g. 'write'",
+      "readOnly": true,
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "PlatformShare": {
+    "properties": {
+     "count": {
+      "format": "int64",
+      "type": "integer"
+     },
+     "percentage": {
+      "format": "double",
+      "type": "number"
+     },
+     "platform": {
+      "type": "string"
+     }
+    },
+    "required": [
+     "count",
+     "percentage",
+     "platform"
+    ],
+    "type": "object"
+   },
+   "ProjectBinding": {
+    "properties": {
+     "devOpsPlatformSettingId": {
+      "type": "string"
+     },
+     "id": {
+      "type": "string"
+     },
+     "projectId": {
+      "type": "string"
+     },
+     "projectKey": {
+      "type": "string"
+     },
+     "repository": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "slug": {
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "devOpsPlatformSettingId",
+     "id",
+     "projectId",
+     "projectKey"
+    ],
+    "type": "object"
+   },
+   "ProjectBindingsSearchRestResponse": {
+    "properties": {
+     "page": {
+      "$ref": "#/components/schemas/PageRestResponse"
+     },
+     "projectBindings": {
+      "items": {
+       "$ref": "#/components/schemas/ProjectBinding"
+      },
+      "type": "array"
+     }
+    },
+    "type": "object"
+   },
+   "ProjectIssueCount": {
+    "properties": {
+     "branchId": {
+      "type": "string"
+     },
+     "branchName": {
+      "example": "develop",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "issueCount": {
+      "format": "int64",
+      "type": "integer"
+     },
+     "projectKey": {
+      "example": "my-project",
+      "type": "string"
+     },
+     "projectName": {
+      "example": "My Project",
+      "type": "string"
+     },
+     "referenceIssueCount": {
+      "format": "int64",
+      "type": [
+       "integer",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "branchId",
+     "issueCount",
+     "projectKey",
+     "projectName"
+    ],
+    "type": "object"
+   },
+   "ProjectIssueCountsResponse": {
+    "properties": {
+     "hiddenProjectCount": {
+      "description": "The number of projects excluded from the response because the user does not have permission to view those projects. ",
+      "format": "int32",
+      "type": "integer"
+     },
+     "page": {
+      "$ref": "#/components/schemas/Pagination"
+     },
+     "projectIssueCounts": {
+      "items": {
+       "$ref": "#/components/schemas/ProjectIssueCount"
+      },
+      "type": "array"
+     }
+    },
+    "required": [
+     "hiddenProjectCount",
+     "page",
+     "projectIssueCounts"
+    ],
+    "type": "object"
+   },
+   "ProjectIssueResolution": {
+    "properties": {
+     "branchId": {
+      "type": "string"
+     },
+     "branchName": {
+      "example": "develop",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "projectKey": {
+      "example": "my-project",
+      "type": "string"
+     },
+     "projectName": {
+      "example": "My Project",
+      "type": "string"
+     },
+     "trendPercentage": {
+      "description": "Percentage change in value relative to trendSince.",
+      "format": "double",
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "value": {
+      "format": "int64",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "branchId",
+     "projectKey",
+     "projectName",
+     "value"
+    ],
+    "type": "object"
+   },
+   "ProjectIssueResolutionResponse": {
+    "properties": {
+     "page": {
+      "$ref": "#/components/schemas/Pagination"
+     },
+     "projectIssueResolution": {
+      "items": {
+       "$ref": "#/components/schemas/ProjectIssueResolution"
+      },
+      "type": "array"
+     },
+     "statistic": {
+      "enum": [
+       "MTTR",
+       "RECENT_MTTR",
+       "RESOLVED_ISSUES"
+      ],
+      "type": "string"
+     }
+    },
+    "required": [
+     "page",
+     "projectIssueResolution",
+     "statistic"
+    ],
+    "type": "object"
+   },
+   "ProjectLinkRestResponse": {
+    "properties": {
+     "name": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "type": {
+      "type": "string"
+     },
+     "url": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "ProjectMeasure": {
+    "properties": {
+     "branchId": {
+      "type": "string"
+     },
+     "branchName": {
+      "example": "develop",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "measure": {
+      "$ref": "#/components/schemas/ProjectMeasureMetric"
+     },
+     "projectKey": {
+      "example": "my-project",
+      "type": "string"
+     },
+     "projectName": {
+      "example": "My Project",
+      "type": "string"
+     }
+    },
+    "required": [
+     "branchId",
+     "measure",
+     "projectKey",
+     "projectName"
+    ],
+    "type": "object"
+   },
+   "ProjectMeasureMetric": {
+    "properties": {
+     "currentValue": {
+      "description": "Value of the measure encoded as a string. Use the measure's type to interpret the value. The value may be null if the measure has no current value. ",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "metric": {
+      "description": "Metric key",
+      "example": "coverage",
+      "type": "string"
+     },
+     "referenceValue": {
+      "description": "Reference value for the measure encoded as a string, used for trend calculation. Use the measure's type to interpret the value. The value may be null if the measure did not have a value on the reference date. ",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "type": {
+      "description": "Identifies the measure's data type.",
+      "example": "PERCENT",
+      "type": "string"
+     }
+    },
+    "required": [
+     "metric",
+     "type"
+    ],
+    "type": "object"
+   },
+   "ProjectMeasuresResponse": {
+    "properties": {
+     "hiddenProjectCount": {
+      "description": "The number of projects excluded from the response because the user does not have permission to view those projects. ",
+      "format": "int32",
+      "type": "integer"
+     },
+     "page": {
+      "$ref": "#/components/schemas/Pagination"
+     },
+     "projectMeasures": {
+      "items": {
+       "$ref": "#/components/schemas/ProjectMeasure"
+      },
+      "type": "array"
+     }
+    },
+    "required": [
+     "hiddenProjectCount",
+     "page",
+     "projectMeasures"
+    ],
+    "type": "object"
+   },
+   "ProjectRestResponse": {
+    "properties": {
+     "createdAt": {
+      "format": "date-time",
+      "type": "string"
+     },
+     "description": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "id": {
+      "type": "string"
+     },
+     "key": {
+      "type": "string"
+     },
+     "links": {
+      "items": {
+       "$ref": "#/components/schemas/ProjectLinkRestResponse"
+      },
+      "type": "array"
+     },
+     "name": {
+      "type": "string"
+     },
+     "tags": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     "updatedAt": {
+      "format": "date-time",
+      "type": "string"
+     },
+     "visibility": {
+      "enum": [
+       "public",
+       "private"
+      ],
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "ProjectsSearchRestResponse": {
+    "properties": {
+     "page": {
+      "$ref": "#/components/schemas/PageRestResponse"
+     },
+     "projects": {
+      "items": {
+       "$ref": "#/components/schemas/ProjectRestResponse"
+      },
+      "type": "array"
+     }
+    },
+    "type": "object"
+   },
+   "ProjectsStep": {
+    "properties": {
+     "analyzed": {
+      "format": "int64",
+      "type": "integer"
+     },
+     "notImported": {
+      "format": "int64",
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "notScanned": {
+      "format": "int64",
+      "type": "integer"
+     },
+     "percent": {
+      "format": "double",
+      "type": [
+       "number",
+       "null"
+      ]
+     },
+     "total": {
+      "format": "int64",
+      "type": [
+       "integer",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "analyzed",
+     "notScanned"
+    ],
+    "type": "object"
+   },
+   "RepositoriesStep": {
+    "properties": {
+     "discovered": {
+      "format": "int64",
+      "type": [
+       "integer",
+       "null"
+      ]
+     },
+     "imported": {
+      "format": "int64",
+      "type": "integer"
+     },
+     "percent": {
+      "format": "double",
+      "type": [
+       "number",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "imported"
+    ],
+    "type": "object"
+   },
+   "RuleCreateRestRequest": {
+    "properties": {
+     "cleanCodeAttribute": {
+      "description": "Clean code attribute",
+      "enum": [
+       "CONVENTIONAL",
+       "FORMATTED",
+       "IDENTIFIABLE",
+       "CLEAR",
+       "COMPLETE",
+       "EFFICIENT",
+       "LOGICAL",
+       "DISTINCT",
+       "FOCUSED",
+       "MODULAR",
+       "TESTED",
+       "LAWFUL",
+       "RESPECTFUL",
+       "TRUSTWORTHY"
+      ],
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "impacts": {
+      "description": "Impacts",
+      "items": {
+       "$ref": "#/components/schemas/Impact"
+      },
+      "type": "array"
+     },
+     "key": {
+      "description": "Key of the custom rule to create, must include the repository",
+      "maxLength": 200,
+      "minLength": 0,
+      "type": "string"
+     },
+     "markdownDescription": {
+      "description": "Rule description in markdown format",
+      "type": "string"
+     },
+     "name": {
+      "description": "Rule name",
+      "maxLength": 200,
+      "minLength": 0,
+      "type": "string"
+     },
+     "parameters": {
+      "description": "Custom rule parameters",
+      "items": {
+       "$ref": "#/components/schemas/Parameter"
+      },
+      "type": [
+       "array",
+       "null"
+      ]
+     },
+     "severity": {
+      "description": "Severity",
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "status": {
+      "default": "READY",
+      "description": "Rule status",
+      "enum": [
+       "BETA",
+       "DEPRECATED",
+       "READY",
+       "REMOVED"
+      ],
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "templateKey": {
+      "description": "Key of the rule template to be used to create the custom rule",
+      "maxLength": 200,
+      "minLength": 0,
+      "type": "string"
+     },
+     "type": {
+      "description": "Rule type",
+      "enum": [
+       "CODE_SMELL",
+       "BUG",
+       "VULNERABILITY",
+       "SECURITY_HOTSPOT"
+      ],
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "impacts",
+     "key",
+     "markdownDescription",
+     "name",
+     "templateKey"
+    ],
+    "type": "object"
+   },
+   "RuleDescriptionSectionContextRestResponse": {
+    "properties": {
+     "displayName": {
+      "type": "string"
+     },
+     "key": {
+      "type": "string"
+     }
+    },
+    "readOnly": true,
+    "type": "object"
+   },
+   "RuleDescriptionSectionRestResponse": {
+    "properties": {
+     "content": {
+      "readOnly": true,
+      "type": "string"
+     },
+     "context": {
+      "$ref": "#/components/schemas/RuleDescriptionSectionContextRestResponse",
+      "readOnly": true
+     },
+     "key": {
+      "readOnly": true,
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "RuleKey": {
+    "properties": {
+     "repository": {
+      "type": "string"
+     },
+     "rule": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "RuleRestResponse": {
+    "properties": {
+     "cleanCodeAttribute": {
+      "enum": [
+       "CONVENTIONAL",
+       "FORMATTED",
+       "IDENTIFIABLE",
+       "CLEAR",
+       "COMPLETE",
+       "EFFICIENT",
+       "LOGICAL",
+       "DISTINCT",
+       "FOCUSED",
+       "MODULAR",
+       "TESTED",
+       "LAWFUL",
+       "RESPECTFUL",
+       "TRUSTWORTHY"
+      ],
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "cleanCodeAttributeCategory": {
+      "enum": [
+       "ADAPTABLE",
+       "CONSISTENT",
+       "INTENTIONAL",
+       "RESPONSIBLE"
+      ],
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "createdAt": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "descriptionSections": {
+      "items": {
+       "$ref": "#/components/schemas/RuleDescriptionSectionRestResponse"
+      },
+      "type": "array"
+     },
+     "educationPrinciples": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     "external": {
+      "type": "boolean"
+     },
+     "gapDescription": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "htmlNote": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "id": {
+      "type": "string"
+     },
+     "impacts": {
+      "items": {
+       "$ref": "#/components/schemas/Impact"
+      },
+      "type": "array"
+     },
+     "key": {
+      "type": "string"
+     },
+     "languageKey": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "languageName": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "markdownDescription": {
+      "type": "string"
+     },
+     "markdownNote": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "name": {
+      "type": "string"
+     },
+     "parameters": {
+      "items": {
+       "$ref": "#/components/schemas/Parameter"
+      },
+      "type": "array"
+     },
+     "remediationFunctionBaseEffort": {
+      "type": "string"
+     },
+     "remediationFunctionGapMultiplier": {
+      "type": "string"
+     },
+     "remediationFunctionType": {
+      "type": "string"
+     },
+     "repositoryKey": {
+      "type": "string"
+     },
+     "severity": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "status": {
+      "enum": [
+       "BETA",
+       "DEPRECATED",
+       "READY",
+       "REMOVED"
+      ],
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "systemTags": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     "tags": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     },
+     "template": {
+      "type": "boolean"
+     },
+     "templateId": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "type": {
+      "enum": [
+       "CODE_SMELL",
+       "BUG",
+       "VULNERABILITY",
+       "SECURITY_HOTSPOT"
+      ],
+      "type": "string"
+     }
+    },
+    "readOnly": true,
+    "type": "object"
+   },
+   "ScmAccessTokenRestResponse": {
+    "properties": {
+     "alm": {
+      "type": "string"
+     },
+     "expiresAt": {
+      "type": "string"
+     },
+     "secret": {
+      "type": "string"
+     },
+     "username": {
+      "type": "string"
+     }
+    },
+    "type": "object"
+   },
+   "TimelinePoint": {
+    "properties": {
+     "date": {
+      "format": "date-time",
+      "type": "string"
+     },
+     "projectsScanned": {
+      "format": "int64",
+      "type": "integer"
+     },
+     "repositoriesImported": {
+      "format": "int64",
+      "type": "integer"
+     }
+    },
+    "required": [
+     "date",
+     "projectsScanned",
+     "repositoriesImported"
+    ],
+    "type": "object"
+   },
+   "UpdateFieldListString": {
+    "properties": {
+     "defined": {
+      "type": "boolean"
+     },
+     "value": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array"
+     }
+    },
+    "type": "object"
+   },
+   "UserCreateRestRequest": {
+    "properties": {
+     "email": {
+      "description": "User email",
+      "format": "email",
+      "maxLength": 100,
+      "minLength": 1,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "local": {
+      "default": true,
+      "description": "Specify if the user should be authenticated from SonarQube server or from an external authentication system. Password should not be set when local is set to false.",
+      "type": [
+       "boolean",
+       "null"
+      ]
+     },
+     "login": {
+      "description": "User login",
+      "maxLength": 100,
+      "minLength": 2,
+      "type": "string"
+     },
+     "name": {
+      "description": "User name",
+      "maxLength": 200,
+      "minLength": 0,
+      "type": "string"
+     },
+     "password": {
+      "description": "User password. Only mandatory when creating local user, otherwise it should not be set. The password needs to fulfill the following requirements: at least 12 characters and contain at least one uppercase character, one lowercase character, one digit and one special character.",
+      "type": [
+       "string",
+       "null"
+      ],
+      "writeOnly": true
+     },
+     "scmAccounts": {
+      "description": "List of SCM accounts.",
+      "items": {
+       "type": "string"
+      },
+      "type": [
+       "array",
+       "null"
+      ]
+     }
+    },
+    "required": [
+     "login",
+     "name"
+    ],
+    "type": "object"
+   },
+   "UserRestResponseForAdmins": {
+    "properties": {
+     "active": {
+      "readOnly": true,
+      "type": [
+       "boolean",
+       "null"
+      ]
+     },
+     "avatar": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "email": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "externalId": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "externalLogin": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "externalProvider": {
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "id": {
+      "readOnly": true,
+      "type": "string"
+     },
+     "local": {
+      "readOnly": true,
+      "type": [
+       "boolean",
+       "null"
+      ]
+     },
+     "login": {
+      "type": "string"
+     },
+     "managed": {
+      "readOnly": true,
+      "type": [
+       "boolean",
+       "null"
+      ]
+     },
+     "name": {
+      "type": "string"
+     },
+     "scmAccounts": {
+      "items": {
+       "type": "string"
+      },
+      "type": [
+       "array",
+       "null"
+      ]
+     },
+     "sonarLintLastConnectionDate": {
+      "readOnly": true,
+      "type": [
+       "string",
+       "null"
+      ]
+     },
+     "sonarQubeLastConnectionDate": {
+      "readOnly": true,
+      "type": [
+       "string",
+       "null"
+      ]
+     }
+    },
+    "type": "object"
+   },
+   "UserUpdateRestRequest": {
+    "properties": {
+     "email": {
+      "description": "Email",
+      "format": "email",
+      "maxLength": 100,
+      "minLength": 1,
+      "type": "string"
+     },
+     "externalId": {
+      "description": "New external id in the authentication system.",
+      "maxLength": 255,
+      "minLength": 1,
+      "type": "string"
+     },
+     "externalLogin": {
+      "description": "New external login, usually the login used in the authentication system.",
+      "maxLength": 255,
+      "minLength": 1,
+      "type": "string"
+     },
+     "externalProvider": {
+      "description": "New identity provider. Only providers configured in your platform are supported. This could be: github, gitlab, bitbucket, saml, LDAP, LDAP_{serverKey}\n(according to your server configuration file).\nWarning: when this is updated, the user will only be able to authenticate using the new identity provider. The account is turned back into a local one\nonly when 'externalProvider', 'externalLogin' and 'externalId' are all null or absent from the request; the resulting local account has no password\n(it was cleared when the account was originally bound to an external identity) and an administrator must set one before it can authenticate locally\nagain. Binding a local account to an external identity provider requires this field to be explicitly set together with 'externalLogin' and/or 'externalId'.\n",
+      "type": "string"
+     },
+     "local": {
+      "description": "Expected local status of the user once this update is applied. Provided as a safety check: if the resulting local status of the\nuser does not match this value, the request is rejected instead of applied.\n",
+      "type": "boolean"
+     },
+     "login": {
+      "description": "User login",
+      "maxLength": 100,
+      "minLength": 2,
+      "type": "string"
+     },
+     "name": {
+      "description": "User first name and last name",
+      "maxLength": 200,
+      "minLength": 0,
+      "type": "string"
+     },
+     "scmAccounts": {
+      "$ref": "#/components/schemas/UpdateFieldListString",
+      "description": "List of SCM accounts.",
+      "items": {
+       "type": "string"
+      }
+     }
+    },
+    "type": "object"
+   },
+   "UsersSearchRestResponse": {
+    "properties": {
+     "page": {
+      "$ref": "#/components/schemas/PageRestResponse"
+     },
+     "users": {
+      "items": {
+       "$ref": "#/components/schemas/UserRestResponseForAdmins"
+      },
+      "type": "array"
+     }
+    },
+    "type": "object"
+   }
+  }
+ },
+ "info": {
+  "description": "The SonarQube API v2 is a REST API which enables you to interact with SonarQube programmatically.\nWhile not all endpoints of the former Web API are available yet, the ones available are stable and can be used in production environments.\n",
+  "title": "SonarQube Web API v2",
+  "version": "26.11.0.134175"
+ },
+ "openapi": "3.1.0",
+ "paths": {
+  "/agentic/jobs": {
+   "get": {
+    "description": "List agentic orchestration jobs (Hunter and Remediation agents), most recent first.\nRequires system administration permission.\n",
+    "operationId": "search_3",
+    "parameters": [
+     {
+      "description": "Comma-separated list of job ids to filter on.",
+      "in": "query",
+      "name": "id",
+      "required": false,
+      "schema": {
+       "description": "Comma-separated list of job ids to filter on.",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Comma-separated list of statuses to filter on.",
+      "in": "query",
+      "name": "status",
+      "required": false,
+      "schema": {
+       "description": "Comma-separated list of statuses to filter on.",
+       "enum": [
+        "PENDING",
+        "IN_PROGRESS",
+        "COMPLETED",
+        "FAILED"
+       ],
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Comma-separated list of agent types to filter on.",
+      "in": "query",
+      "name": "type",
+      "required": false,
+      "schema": {
+       "description": "Comma-separated list of agent types to filter on.",
+       "enum": [
+        "HUNTER",
+        "REMEDIATION"
+       ],
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Only return jobs created on or after this date (or date-time), e.g. 2026-01-01 or 2026-01-01T12:00:00+0000.",
+      "in": "query",
+      "name": "createdAfter",
+      "required": false,
+      "schema": {
+       "description": "Only return jobs created on or after this date (or date-time), e.g. 2026-01-01 or 2026-01-01T12:00:00+0000.",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Only return jobs created on or before this date (or date-time), e.g. 2026-01-01 or 2026-01-01T12:00:00+0000.",
+      "in": "query",
+      "name": "createdBefore",
+      "required": false,
+      "schema": {
+       "description": "Only return jobs created on or before this date (or date-time), e.g. 2026-01-01 or 2026-01-01T12:00:00+0000.",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Number of results per page. A value of 0 will only return the pagination information.",
+      "in": "query",
+      "name": "pageSize",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "description": "Number of results per page. A value of 0 will only return the pagination information.",
+       "format": "int32",
+       "maximum": 500,
+       "minimum": 0,
+       "type": "integer"
+      }
+     },
+     {
+      "description": "1-based page index",
+      "in": "query",
+      "name": "pageIndex",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "description": "1-based page index",
+       "exclusiveMinimum": 0,
+       "format": "int32",
+       "minimum": 1,
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AgenticJobsSearchRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Search agentic jobs",
+    "tags": [
+     "Agentic"
+    ]
+   }
+  },
+  "/analysis/active_rules": {
+   "get": {
+    "description": "Used by the scanner-engine to get all active rules for a given project.",
+    "operationId": "getActiveRules",
+    "parameters": [
+     {
+      "description": "Project Key",
+      "in": "query",
+      "name": "projectKey",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/ActiveRule"
+         },
+         "type": "array"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Get all active rules for a specific project",
+    "tags": [
+     "Analysis"
+    ]
+   }
+  },
+  "/analysis/engine": {
+   "get": {
+    "description": "This endpoint return the Scanner Engine metadata by default. To download the Scanner Engine, set the Accept header of the request to 'application/octet-stream'.",
+    "operationId": "downloadScannerEngine",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EngineInfoRestResponse"
+        }
+       },
+       "application/octet-stream": {
+        "schema": {
+         "format": "binary",
+         "type": "string"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Scanner engine download/metadata",
+    "tags": [
+     "Analysis"
+    ]
+   }
+  },
+  "/analysis/jres": {
+   "get": {
+    "description": "Get metadata of all available JREs",
+    "operationId": "getJresMetadata",
+    "parameters": [
+     {
+      "description": "Filter the JRE by operating system. Accepted values are 'windows', 'linux', 'macos', 'alpine' (case-insensitive), with some aliases",
+      "in": "query",
+      "name": "os",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "description": "Filter the JRE by CPU architecture. Accepted values are 'x64' and 'aarch64' (case-insensitive), with some aliases.",
+      "in": "query",
+      "name": "arch",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "$ref": "#/components/schemas/JreInfoRestResponse"
+         },
+         "type": "array"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "All JREs metadata",
+    "tags": [
+     "Analysis"
+    ]
+   }
+  },
+  "/analysis/jres/{id}": {
+   "get": {
+    "description": "This endpoint return the JRE metadata by default. To download the JRE binary asset, set the Accept header of the request to 'application/octet-stream'.",
+    "operationId": "downloadJre",
+    "parameters": [
+     {
+      "description": "The ID of the JRE",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/JreInfoRestResponse"
+        }
+       },
+       "application/octet-stream": {
+        "schema": {
+         "format": "binary",
+         "type": "string"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "JRE download/metadata",
+    "tags": [
+     "Analysis"
+    ]
+   }
+  },
+  "/analysis/version": {
+   "get": {
+    "description": "Get the version of the Scanner Engine",
+    "operationId": "getVersion",
+    "responses": {
+     "200": {
+      "content": {
+       "text/plain": {
+        "schema": {
+         "type": "string"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Server version",
+    "tags": [
+     "Analysis"
+    ]
+   }
+  },
+  "/authorizations/group-memberships": {
+   "get": {
+    "description": "  Get the list of groups and members matching the query.\n",
+    "operationId": "search_2",
+    "parameters": [
+     {
+      "description": "ID of the user for which to search groups. If not set, all groups are returned.",
+      "in": "query",
+      "name": "userId",
+      "required": false,
+      "schema": {
+       "description": "ID of the user for which to search groups. If not set, all groups are returned.",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "ID of the group for which to search members. If not set, all groups are returned.",
+      "in": "query",
+      "name": "groupId",
+      "required": false,
+      "schema": {
+       "description": "ID of the group for which to search members. If not set, all groups are returned.",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Number of results per page. A value of 0 will only return the pagination information.",
+      "in": "query",
+      "name": "pageSize",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "description": "Number of results per page. A value of 0 will only return the pagination information.",
+       "format": "int32",
+       "maximum": 500,
+       "minimum": 0,
+       "type": "integer"
+      }
+     },
+     {
+      "description": "1-based page index",
+      "in": "query",
+      "name": "pageIndex",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "description": "1-based page index",
+       "exclusiveMinimum": 0,
+       "format": "int32",
+       "minimum": 1,
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GroupsMembershipSearchRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Search across group memberships",
+    "tags": [
+     "Authorizations"
+    ]
+   },
+   "post": {
+    "description": "Add a user to a group.",
+    "operationId": "create_4",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/GroupMembershipCreateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GroupMembershipRestResponse"
+        }
+       }
+      },
+      "description": "Created"
+     }
+    },
+    "summary": "Add a group membership",
+    "tags": [
+     "Authorizations"
+    ]
+   }
+  },
+  "/authorizations/group-memberships/{id}": {
+   "delete": {
+    "description": "Remove a user from a group",
+    "operationId": "delete",
+    "parameters": [
+     {
+      "description": "The ID of the group membership to delete.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "No Content"
+     }
+    },
+    "summary": "Remove a group membership",
+    "tags": [
+     "Authorizations"
+    ]
+   }
+  },
+  "/authorizations/groups": {
+   "get": {
+    "description": "  Get the list of groups.\n  The results are sorted alphabetically by group name.\n",
+    "operationId": "search_1",
+    "parameters": [
+     {
+      "description": "Return managed or non-managed groups. Only available for managed instances, throws for non-managed instances",
+      "in": "query",
+      "name": "managed",
+      "required": false,
+      "schema": {
+       "description": "Return managed or non-managed groups. Only available for managed instances, throws for non-managed instances",
+       "type": [
+        "boolean",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Filter on name.\nThis parameter performs a partial match (contains), it is case insensitive.",
+      "in": "query",
+      "name": "q",
+      "required": false,
+      "schema": {
+       "description": "Filter on name.\nThis parameter performs a partial match (contains), it is case insensitive.",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Filter groups containing the user. Only available for system administrators. Using != operator will search for groups without the user.",
+      "in": "query",
+      "name": "userId",
+      "required": false,
+      "schema": {
+       "description": "Filter groups containing the user. Only available for system administrators. Using != operator will search for groups without the user.",
+       "internal": "true",
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "x-internal": "true"
+     },
+     {
+      "description": "Number of results per page. A value of 0 will only return the pagination information.",
+      "in": "query",
+      "name": "pageSize",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "description": "Number of results per page. A value of 0 will only return the pagination information.",
+       "format": "int32",
+       "maximum": 500,
+       "minimum": 0,
+       "type": "integer"
+      }
+     },
+     {
+      "description": "1-based page index",
+      "in": "query",
+      "name": "pageIndex",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "description": "1-based page index",
+       "exclusiveMinimum": 0,
+       "format": "int32",
+       "minimum": 1,
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GroupsSearchRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Group search",
+    "tags": [
+     "Authorizations"
+    ]
+   },
+   "post": {
+    "description": "Create a new group.",
+    "operationId": "create_3",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/GroupCreateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GroupRestResponse"
+        }
+       }
+      },
+      "description": "Created"
+     }
+    },
+    "summary": "Create a new group",
+    "tags": [
+     "Authorizations"
+    ]
+   }
+  },
+  "/authorizations/groups/{id}": {
+   "delete": {
+    "description": "Deletes a group.",
+    "operationId": "deleteGroup",
+    "parameters": [
+     {
+      "description": "The ID of the group to delete.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "No Content"
+     }
+    },
+    "summary": "Deletes a group",
+    "tags": [
+     "Authorizations"
+    ]
+   },
+   "get": {
+    "description": "Fetch a single group.",
+    "operationId": "fetchGroup",
+    "parameters": [
+     {
+      "description": "The id of the group to fetch.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GroupRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Fetch a single group",
+    "tags": [
+     "Authorizations"
+    ]
+   },
+   "patch": {
+    "description": "Update a group name or description.\n",
+    "operationId": "updateGroup",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/merge-patch+json": {
+       "schema": {
+        "$ref": "#/components/schemas/GroupUpdateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GroupRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Update a group",
+    "tags": [
+     "Authorizations"
+    ]
+   }
+  },
+  "/clean-code-policy/mode": {
+   "get": {
+    "description": "Fetch the current instance mode. Can be Multi-Quality Rules (MQR) Mode or Standard Experience.\n",
+    "operationId": "getMode",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ModeResource"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Retrieve current instance Mode",
+    "tags": [
+     "Clean Code Policy"
+    ],
+    "x-sonar-internal": "true"
+   },
+   "patch": {
+    "description": "Update the current instance mode. Can be Multi-Quality Rules (MQR) Mode or Standard Experience.\nRequires 'Administer System' permission.\n",
+    "operationId": "patchMode",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ModeResource"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ModeResource"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Update current instance Mode",
+    "tags": [
+     "Clean Code Policy"
+    ],
+    "x-sonar-internal": "true"
+   }
+  },
+  "/clean-code-policy/rules": {
+   "post": {
+    "description": "  Create a custom rule.\n  Requires the 'Administer Quality Profiles' permission.\n",
+    "operationId": "create_2",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/RuleCreateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RuleRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Custom rule creation",
+    "tags": [
+     "Clean Code Policy"
+    ],
+    "x-internal": "true"
+   }
+  },
+  "/components/projects": {
+   "get": {
+    "description": "Get projects using query parameters. At least one of ids or keys is required.\nFilters are combined with AND; tags match any supplied tag.\nOnly projects for which the caller has Browse permission are returned.\nResults are ordered by creation time, then project ID, in ascending order.\nSet pageSize to 0 to return only the total number of matching projects.\n",
+    "operationId": "getProjects",
+    "parameters": [
+     {
+      "description": "Project IDs to query by.",
+      "in": "query",
+      "name": "ids",
+      "required": false,
+      "schema": {
+       "description": "Project IDs to query by.",
+       "items": {
+        "description": "Project IDs to query by.",
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ],
+       "uniqueItems": true
+      }
+     },
+     {
+      "description": "Project keys to query by.",
+      "in": "query",
+      "name": "keys",
+      "required": false,
+      "schema": {
+       "description": "Project keys to query by.",
+       "items": {
+        "description": "Project keys to query by.",
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ],
+       "uniqueItems": true
+      }
+     },
+     {
+      "description": "Match projects with any of these tags.",
+      "in": "query",
+      "name": "tags",
+      "required": false,
+      "schema": {
+       "description": "Match projects with any of these tags.",
+       "items": {
+        "description": "Match projects with any of these tags.",
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ],
+       "uniqueItems": true
+      }
+     },
+     {
+      "description": "The 1-based page index.",
+      "in": "query",
+      "name": "pageIndex",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "description": "The 1-based page index.",
+       "format": "int32",
+       "minimum": 1,
+       "type": "integer"
+      }
+     },
+     {
+      "description": "Page size. Use 0 to return only the total.",
+      "in": "query",
+      "name": "pageSize",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "description": "Page size. Use 0 to return only the total.",
+       "format": "int32",
+       "maximum": 5000,
+       "minimum": 0,
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProjectsSearchRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Get projects",
+    "tags": [
+     "Components"
+    ]
+   }
+  },
+  "/dashboards/built-ins": {
+   "get": {
+    "operationId": "listBuiltInDashboards",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "q",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "in": "query",
+      "name": "resourceType",
+      "required": false,
+      "schema": {
+       "enum": [
+        "project",
+        "portfolio"
+       ],
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "in": "query",
+      "name": "pageIndex",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "format": "int32",
+       "minimum": 1,
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "pageSize",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "format": "int32",
+       "maximum": 5000,
+       "minimum": 0,
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/BuiltInDashboardsResponse"
+        }
+       }
+      },
+      "description": "Successful operation"
+     },
+     "400": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Bad Request"
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unauthorized"
+     },
+     "403": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Forbidden"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Found"
+     },
+     "429": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Too Many Requests"
+     },
+     "500": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Internal Server Error"
+     },
+     "501": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Implemented"
+     }
+    },
+    "summary": "List built-in dashboards",
+    "tags": [
+     "built-in-dashboards"
+    ]
+   }
+  },
+  "/dashboards/built-ins/{key}": {
+   "get": {
+    "operationId": "getBuiltInDashboard",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "key",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/BuiltInDashboardResponse"
+        }
+       }
+      },
+      "description": "Successful operation"
+     },
+     "400": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Bad Request"
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unauthorized"
+     },
+     "403": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Forbidden"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Found"
+     },
+     "429": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Too Many Requests"
+     },
+     "500": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Internal Server Error"
+     },
+     "501": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Implemented"
+     }
+    },
+    "summary": "Get a built-in dashboard",
+    "tags": [
+     "built-in-dashboards"
+    ]
+   }
+  },
+  "/dop-translation/bound-projects": {
+   "post": {
+    "description": "Create a SonarQube project with the information from the provided DevOps platform project.\nAutoconfigure Pull-Request decoration mechanism.\nRequires the 'Create Projects' permission and setting a Personal Access Token with api/alm_integrations/set_pat for a user who will be using this endpoint\n",
+    "operationId": "createBoundProject",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/BoundProjectCreateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/BoundProjectCreateRestResponse"
+        }
+       }
+      },
+      "description": "Project successfully created and bound to DevOps platform"
+     },
+     "400": {
+      "description": "Bad request - personal access token for the DevOps platform setting is missing"
+     },
+     "401": {
+      "description": "Authentication required"
+     },
+     "403": {
+      "description": "Insufficient permissions - requires 'Create Projects' permission"
+     },
+     "500": {
+      "description": "Internal server error - failed to fetch repository from DevOps platform (e.g., repository not found, invalid PAT, or insufficient permissions)"
+     }
+    },
+    "summary": "Create a SonarQube project with the information from the provided DevOps platform project.",
+    "tags": [
+     "Dop Translation"
+    ]
+   },
+   "put": {
+    "description": "Create a SonarQube project bound to a DevOps platform repository, or update the binding if the project already exists.\nThis is an idempotent operation. If the project already exists with the same key, its binding will be updated.\nAutoconfigure Pull-Request decoration mechanism.\nCreating a new project requires the 'Create Projects' permission and setting a Personal Access Token with\napi/alm_integrations/set_pat for a user who will be using this endpoint.\nUpdating an existing project additionally requires the 'Administer' permission on that project.\n",
+    "operationId": "createOrUpdateBoundProject",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/BoundProjectCreateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/BoundProjectCreateRestResponse"
+        }
+       }
+      },
+      "description": "Project successfully created or binding updated"
+     },
+     "400": {
+      "description": "Bad request - personal access token for the DevOps platform setting is missing"
+     },
+     "401": {
+      "description": "Authentication required"
+     },
+     "403": {
+      "description": "Insufficient permissions - requires 'Create Projects' permission"
+     },
+     "404": {
+      "description": "Project already exists and the caller lacks 'Administer' permission on it"
+     },
+     "500": {
+      "description": "Internal server error - failed to fetch repository from DevOps platform (e.g., repository not found, invalid PAT, or insufficient permissions)"
+     }
+    },
+    "summary": "Create or update a bound SonarQube project",
+    "tags": [
+     "Dop Translation"
+    ]
+   }
+  },
+  "/dop-translation/dop-settings": {
+   "get": {
+    "description": "Requires the 'Create Projects' permission ",
+    "operationId": "fetchAllDopSettings",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DopSettingsRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "List all DevOps Platform Integration settings",
+    "tags": [
+     "Dop Translation"
+    ]
+   }
+  },
+  "/dop-translation/github-configurations": {
+   "get": {
+    "description": "  Get the list of GitHub configurations.\n  Note that a single configuration is supported at this time.\n  Requires 'Administer System' permission.\n",
+    "operationId": "searchGithubConfiguration",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GithubConfigurationSearchRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Search GitHub configs",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   },
+   "post": {
+    "description": "  Create a new GitHub configuration.\n  Note that only a single configuration can exist at a time.\n  Requires 'Administer System' permission.\n",
+    "operationId": "createGithubConfiguration",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/GithubConfigurationCreateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GithubConfigurationResource"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Create GitHub configuration",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   }
+  },
+  "/dop-translation/github-configurations/{id}": {
+   "delete": {
+    "description": "Delete a GitHub configuration.\nRequires 'Administer System' permission.\n",
+    "operationId": "deleteGithubConfiguration",
+    "parameters": [
+     {
+      "description": "The id of the configuration to delete.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "No Content"
+     }
+    },
+    "summary": "Delete a GitHub configuration",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   },
+   "get": {
+    "description": "Fetch a GitHub configuration. Requires 'Administer System' permission.\n",
+    "operationId": "getGithubConfiguration",
+    "parameters": [
+     {
+      "description": "The id of the configuration to fetch.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GithubConfigurationResource"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Fetch a GitHub configuration",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   },
+   "patch": {
+    "description": "Update a GitHub configuration. Requires 'Administer System' permission.\n",
+    "operationId": "updateGithubConfiguration",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/merge-patch+json": {
+       "schema": {
+        "$ref": "#/components/schemas/GithubConfigurationUpdateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GithubConfigurationResource"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Update a GitHub configuration",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   }
+  },
+  "/dop-translation/github-installation-tokens": {
+   "post": {
+    "description": "Mint a short-lived GitHub App installation token, scoped to the bound repository of the given\nproject. Internal endpoint used by the agentic-workflows remediation orchestrator (SONAR-30903).\nRequires the 'Administer System' permission.\n",
+    "operationId": "generateInstallationToken",
+    "parameters": [
+     {
+      "description": "Project key",
+      "in": "query",
+      "name": "project",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GithubInstallationTokenRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Mint a GitHub App installation token",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   }
+  },
+  "/dop-translation/gitlab-configurations": {
+   "get": {
+    "description": "  Get the list of GitLab configurations.\n  Note that a single configuration is supported at this time.\n  Requires authentication. System administrators receive the full configuration; other\n  logged-in users receive a reduced response with only the provisioning status.\n",
+    "operationId": "searchGitlabConfiguration",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GitlabConfigurationSearchRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Search GitLab configs",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   },
+   "post": {
+    "description": "  Create a new Gitlab configuration.\n  Note that only a single configuration can exist at a time.\n  Requires 'Administer System' permission.\n",
+    "operationId": "create_1",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/GitlabConfigurationCreateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GitlabConfigurationRestResponseForAdmins"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Create Gitlab configuration",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   }
+  },
+  "/dop-translation/gitlab-configurations/{id}": {
+   "delete": {
+    "description": "Delete a GitLab configuration.\nRequires 'Administer System' permission.\n",
+    "operationId": "deleteGitlabConfiguration",
+    "parameters": [
+     {
+      "description": "The id of the configuration to delete.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "No Content"
+     }
+    },
+    "summary": "Delete a GitLab configuration",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   },
+   "get": {
+    "description": "Fetch a GitLab configuration. Requires authentication. System administrators receive the full\nconfiguration; other logged-in users receive a reduced response with only the provisioning status.\n",
+    "operationId": "getGitlabConfiguration",
+    "parameters": [
+     {
+      "description": "The id of the configuration to fetch.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GitlabConfigurationRestResponseForAdmins"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Fetch a GitLab configuration",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   },
+   "patch": {
+    "description": "Update a Gitlab configuration. Requires 'Administer System' permission.\n",
+    "operationId": "updateGitlabConfiguration",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/merge-patch+json": {
+       "schema": {
+        "$ref": "#/components/schemas/GitlabConfigurationUpdateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/GitlabConfigurationRestResponseForAdmins"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Update a Gitlab configuration",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   }
+  },
+  "/dop-translation/permission-checks": {
+   "get": {
+    "description": "Validates whether the configured DevOps Platforms (GitHub, GitLab, Azure DevOps) grant the write permissions the\nSonarQube Remediation Agent needs to clone a repository, push a branch and open a pull/merge request. Results are\ncached for a short time. Internal endpoint used by the Remediation Agent UI.\n\nWithout 'project' it checks configurations instance-wide and requires the 'Administer System' permission or\ntrusted privileged-service authentication; 'configuration' narrows that to a single configuration. With 'project'\nit checks the platform bound to that project and requires 'Browse' permission on the project; a GitHub project is\nchecked against the installation covering its own repository, so two projects sharing one configuration can get\ndifferent results. 'project' and 'configuration' cannot be combined.\n\nFor GitHub, the response also reports permissions the app itself is not configured to request, and \u2014 for\nadministrator requests \u2014 every installation that has not approved the permissions it does request, whether an\norganization or a personal account owns it. The counts and list are valid only when 'installationCheckStatus' is\nCOMPLETE. If the scan cannot finish, 'installationCheckStatus' is FAILED and 'status' is CHECK_FAILED. The\nresponse does not include the counts or list.\n",
+    "operationId": "checkDopPermissions",
+    "parameters": [
+     {
+      "description": "Key of the project whose bound DevOps Platform should be checked",
+      "in": "query",
+      "name": "project",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Key of a single DevOps Platform configuration to check, instead of all of them. Cannot be combined with 'project'.\n",
+      "in": "query",
+      "name": "configuration",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Bypass the cache and run a live check, then store its result. Requires 'configuration' and the\n'Administer System' permission.\n",
+      "in": "query",
+      "name": "refresh",
+      "required": false,
+      "schema": {
+       "default": false,
+       "type": "boolean"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/PermissionChecksRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Check DevOps Platform permissions for the Remediation Agent",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   }
+  },
+  "/dop-translation/project-bindings": {
+   "get": {
+    "operationId": "getProjectBindingByProjectId",
+    "parameters": [
+     {
+      "description": "Filter on the repository name.\nThis parameter performs an exact, case insensitive, match.\n",
+      "in": "query",
+      "name": "repository",
+      "required": false,
+      "schema": {
+       "description": "Filter on the repository name.\nThis parameter performs an exact, case insensitive, match.\n",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Filter on the DevOps Platform setting id.",
+      "in": "query",
+      "name": "dopSettingId",
+      "required": false,
+      "schema": {
+       "description": "Filter on the DevOps Platform setting id.",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Filter on the repository URL.\nThis parameter can be in different formats, the traditional URL or the git remote URL (https or ssh).\n",
+      "in": "query",
+      "name": "repositoryUrl",
+      "required": false,
+      "schema": {
+       "description": "Filter on the repository URL.\nThis parameter can be in different formats, the traditional URL or the git remote URL (https or ssh).\n",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Number of results per page. A value of 0 will only return the pagination information.",
+      "in": "query",
+      "name": "pageSize",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "description": "Number of results per page. A value of 0 will only return the pagination information.",
+       "format": "int32",
+       "maximum": 500,
+       "minimum": 0,
+       "type": "integer"
+      }
+     },
+     {
+      "description": "1-based page index",
+      "in": "query",
+      "name": "pageIndex",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "description": "1-based page index",
+       "exclusiveMinimum": 0,
+       "format": "int32",
+       "minimum": 1,
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProjectBindingsSearchRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Search across project bindings",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   }
+  },
+  "/dop-translation/project-bindings/{id}": {
+   "get": {
+    "operationId": "getProjectBinding",
+    "parameters": [
+     {
+      "description": "The id of the project-bindings to fetch.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProjectBinding"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Fetch a single Project Binding",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   }
+  },
+  "/dop-translation/scm-access-tokens": {
+   "post": {
+    "description": "Provide a scoped git credential for the given project's bound DevOps Platform (GitHub or GitLab).\nGitHub credentials are short-lived and minted per call; GitLab credentials are cached in memory per\nSonarQube Server node and refreshed before expiry. Internal endpoint used by the agentic-workflows\nremediation orchestrator (SONAR-31165).\nRequires the 'Administer System' permission or trusted privileged-service authentication.\n",
+    "operationId": "generateScmAccessToken",
+    "parameters": [
+     {
+      "description": "Project key",
+      "in": "query",
+      "name": "project",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ScmAccessTokenRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Provide a scoped SCM access token",
+    "tags": [
+     "Dop Translation"
+    ],
+    "x-sonar-internal": "true"
+   }
+  },
+  "/history/issue-count-history": {
+   "get": {
+    "description": "Returns the history of issue counts for an entity. The maximum resolution for history data is 1 day. You cannot zoom in on a period less than 1 day (e.g. 1hour). All history is recorded in UTC timezone. Issue counts will carry-forward for days with no changes. ",
+    "operationId": "getIssueCountHistory",
+    "parameters": [
+     {
+      "description": "The ID of the entity to retrieve issue count history for.",
+      "in": "query",
+      "name": "entityId",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "description": "The entity's type.",
+      "in": "query",
+      "name": "entityType",
+      "required": true,
+      "schema": {
+       "enum": [
+        "PORTFOLIO",
+        "PROJECT_BRANCH",
+        "APPLICATION"
+       ],
+       "type": "string"
+      }
+     },
+     {
+      "description": "The date and time to begin returning issue count history in ISO 8601 format (inclusive). The start date may not be more than 1 year in the past. ",
+      "in": "query",
+      "name": "startDate",
+      "required": true,
+      "schema": {
+       "format": "date-time",
+       "type": "string"
+      }
+     },
+     {
+      "description": "The date and time to stop returning issue count history in ISO 8601 format (inclusive). If not specified, the current date and time at UTC offset 0 will be used. ",
+      "in": "query",
+      "name": "endDate",
+      "required": false,
+      "schema": {
+       "format": "date-time",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific impacts (comma-separated). An impact is a combination of software quality and severity. ",
+      "in": "query",
+      "name": "impacts",
+      "required": false,
+      "schema": {
+       "items": {
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific types (comma-separated).",
+      "in": "query",
+      "name": "issueTypes",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "BUG",
+         "CODE_SMELL",
+         "VULNERABILITY"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Comma separated list of ruleKeys",
+      "in": "query",
+      "name": "ruleKeys",
+      "required": false,
+      "schema": {
+       "items": {
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific impact severities (comma-separated).",
+      "in": "query",
+      "name": "severities",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "BLOCKER",
+         "HIGH",
+         "INFO",
+         "LOW",
+         "MEDIUM"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific stored issue severities (comma-separated).",
+      "in": "query",
+      "name": "typeSeverities",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "INFO",
+         "MINOR",
+         "MAJOR",
+         "CRITICAL",
+         "BLOCKER"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Optionally group issue counts by a specific dimension. If not provided, issue counts will contain a single distribution with the count of all issues. ",
+      "in": "query",
+      "name": "sliceBy",
+      "required": false,
+      "schema": {
+       "enum": [
+        "RULE_KEY",
+        "SEVERITY",
+        "TYPE_SEVERITY",
+        "SOFTWARE_QUALITY",
+        "STATUS",
+        "TYPE"
+       ],
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific statuses (comma-separated).",
+      "in": "query",
+      "name": "statuses",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "ACCEPTED",
+         "CONFIRMED",
+         "FALSE_POSITIVE",
+         "FIXED",
+         "OPEN"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/IssueCountHistoryResponse"
+        }
+       }
+      },
+      "description": "Successful operation"
+     },
+     "400": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Bad Request"
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unauthorized"
+     },
+     "403": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Forbidden"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Found"
+     },
+     "429": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Too Many Requests"
+     },
+     "500": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Internal Server Error"
+     }
+    },
+    "security": [
+     {
+      "TokenAuth": []
+     }
+    ],
+    "summary": "Provides issue count history data for an entity",
+    "tags": [
+     "issue-count-history"
+    ]
+   }
+  },
+  "/history/issue-density-history": {
+   "get": {
+    "description": "Returns the history of issue density (issues per 1000 NCLOC) for an entity. The maximum resolution for history data is 1 day. All history is recorded in UTC timezone. Issue density values carry-forward for days with no changes. Density is calculated as (issue count / NCLOC) * 1000. ",
+    "operationId": "getIssueDensityHistory",
+    "parameters": [
+     {
+      "description": "The ID of the entity to retrieve issue density history for.",
+      "in": "query",
+      "name": "entityId",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "description": "The entity's type.",
+      "in": "query",
+      "name": "entityType",
+      "required": true,
+      "schema": {
+       "enum": [
+        "PORTFOLIO",
+        "PROJECT_BRANCH",
+        "APPLICATION"
+       ],
+       "type": "string"
+      }
+     },
+     {
+      "description": "The date and time to begin returning issue density history in ISO 8601 format (inclusive). The start date may not be more than 1 year in the past. ",
+      "in": "query",
+      "name": "startDate",
+      "required": true,
+      "schema": {
+       "format": "date-time",
+       "type": "string"
+      }
+     },
+     {
+      "description": "The date and time to stop returning issue density history in ISO 8601 format (inclusive). If not specified, the current date and time at UTC offset 0 will be used. ",
+      "in": "query",
+      "name": "endDate",
+      "required": false,
+      "schema": {
+       "format": "date-time",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific impacts (comma-separated). An impact is a combination of software quality and severity. ",
+      "in": "query",
+      "name": "impacts",
+      "required": false,
+      "schema": {
+       "items": {
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific types (comma-separated).",
+      "in": "query",
+      "name": "issueTypes",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "BUG",
+         "CODE_SMELL",
+         "VULNERABILITY"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Comma separated list of ruleKeys",
+      "in": "query",
+      "name": "ruleKeys",
+      "required": false,
+      "schema": {
+       "items": {
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific impact severities (comma-separated).",
+      "in": "query",
+      "name": "severities",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "BLOCKER",
+         "HIGH",
+         "INFO",
+         "LOW",
+         "MEDIUM"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific stored issue severities (comma-separated).",
+      "in": "query",
+      "name": "typeSeverities",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "INFO",
+         "MINOR",
+         "MAJOR",
+         "CRITICAL",
+         "BLOCKER"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Optionally group issue counts by a specific dimension. If not provided, issue counts will contain a single distribution with the count of all issues. ",
+      "in": "query",
+      "name": "sliceBy",
+      "required": false,
+      "schema": {
+       "enum": [
+        "RULE_KEY",
+        "SEVERITY",
+        "TYPE_SEVERITY",
+        "SOFTWARE_QUALITY",
+        "STATUS",
+        "TYPE"
+       ],
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific statuses (comma-separated).",
+      "in": "query",
+      "name": "statuses",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "ACCEPTED",
+         "CONFIRMED",
+         "FALSE_POSITIVE",
+         "FIXED",
+         "OPEN"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/IssueDensityHistoryResponse"
+        }
+       }
+      },
+      "description": "Successful operation"
+     },
+     "400": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Bad Request"
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unauthorized"
+     },
+     "403": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Forbidden"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Found"
+     },
+     "429": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Too Many Requests"
+     },
+     "500": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Internal Server Error"
+     }
+    },
+    "security": [
+     {
+      "TokenAuth": []
+     }
+    ],
+    "summary": "Provides issue density history data for an entity",
+    "tags": [
+     "issue-density-history"
+    ]
+   }
+  },
+  "/history/issue-resolution-history": {
+   "get": {
+    "description": "Returns issue resolution metrics for an entity. All history is recorded at UTC midnight. MTTR and RECENT_MTTR use a trailing 30-day window ending on each returned day. SQS deliberately permits dates older than one year under the approved history date-range policy. ",
+    "operationId": "getIssueResolutionHistory",
+    "parameters": [
+     {
+      "description": "The ID of the entity to retrieve issue resolution history for.",
+      "in": "query",
+      "name": "entityId",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "description": "The entity's type.",
+      "in": "query",
+      "name": "entityType",
+      "required": true,
+      "schema": {
+       "enum": [
+        "PORTFOLIO",
+        "PROJECT_BRANCH",
+        "APPLICATION"
+       ],
+       "type": "string"
+      }
+     },
+     {
+      "description": "The issue resolution statistic to return.",
+      "in": "query",
+      "name": "statistic",
+      "required": true,
+      "schema": {
+       "enum": [
+        "MTTR",
+        "RECENT_MTTR",
+        "RESOLVED_ISSUES"
+       ],
+       "type": "string"
+      }
+     },
+     {
+      "description": "The inclusive start of the history range in ISO 8601 format.",
+      "in": "query",
+      "name": "startDate",
+      "required": true,
+      "schema": {
+       "format": "date-time",
+       "type": "string"
+      }
+     },
+     {
+      "description": "The inclusive end of the history range. Defaults to the current date.",
+      "in": "query",
+      "name": "endDate",
+      "required": false,
+      "schema": {
+       "format": "date-time",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific impacts (comma-separated). An impact is a combination of software quality and severity. ",
+      "in": "query",
+      "name": "impacts",
+      "required": false,
+      "schema": {
+       "items": {
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific types (comma-separated).",
+      "in": "query",
+      "name": "issueTypes",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "BUG",
+         "CODE_SMELL",
+         "VULNERABILITY"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific impact severities (comma-separated).",
+      "in": "query",
+      "name": "severities",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "BLOCKER",
+         "HIGH",
+         "INFO",
+         "LOW",
+         "MEDIUM"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific stored issue severities (comma-separated).",
+      "in": "query",
+      "name": "typeSeverities",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "INFO",
+         "MINOR",
+         "MAJOR",
+         "CRITICAL",
+         "BLOCKER"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Optionally group issue resolution metrics by a dimension.",
+      "in": "query",
+      "name": "sliceBy",
+      "required": false,
+      "schema": {
+       "enum": [
+        "SEVERITY",
+        "TYPE_SEVERITY",
+        "SOFTWARE_QUALITY",
+        "TYPE"
+       ],
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/IssueResolutionHistoryResponse"
+        }
+       }
+      },
+      "description": "Successful operation"
+     },
+     "400": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Bad Request"
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unauthorized"
+     },
+     "403": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Forbidden"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Found"
+     },
+     "429": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Too Many Requests"
+     },
+     "500": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Internal Server Error"
+     }
+    },
+    "security": [
+     {
+      "TokenAuth": []
+     }
+    ],
+    "summary": "Provides issue resolution history data for an entity",
+    "tags": [
+     "issue-resolution-history"
+    ]
+   }
+  },
+  "/history/measures-history": {
+   "get": {
+    "description": "Returns the history of measures for the given entity.",
+    "operationId": "getMeasuresHistory",
+    "parameters": [
+     {
+      "description": "Type of entity to retrieve measures history for",
+      "in": "query",
+      "name": "entityType",
+      "required": true,
+      "schema": {
+       "enum": [
+        "PORTFOLIO",
+        "PROJECT_BRANCH",
+        "APPLICATION"
+       ],
+       "type": "string"
+      }
+     },
+     {
+      "description": "UUID of the entity",
+      "in": "query",
+      "name": "entityId",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "description": "Comma-separated list of at least one supported metric key to filter by.",
+      "in": "query",
+      "name": "metricKeys",
+      "required": true,
+      "schema": {
+       "items": {
+        "type": "string"
+       },
+       "maxItems": 2147483647,
+       "minItems": 1,
+       "type": "array"
+      }
+     },
+     {
+      "description": "Inclusive start of the date range (ISO-8601)",
+      "in": "query",
+      "name": "startDate",
+      "required": true,
+      "schema": {
+       "format": "date-time",
+       "type": "string"
+      }
+     },
+     {
+      "description": "Inclusive end of the date range (ISO-8601). Defaults to current date.",
+      "in": "query",
+      "name": "endDate",
+      "required": false,
+      "schema": {
+       "format": "date-time",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/MeasuresHistoryResponse"
+        }
+       }
+      },
+      "description": "Measures history for the given entity"
+     },
+     "400": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Bad Request"
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unauthorized"
+     },
+     "403": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Forbidden"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Found"
+     },
+     "429": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Too Many Requests"
+     },
+     "500": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Internal Server Error"
+     }
+    },
+    "security": [
+     {
+      "TokenAuth": []
+     }
+    ],
+    "summary": "Get measures history.",
+    "tags": [
+     "measures-history"
+    ]
+   }
+  },
+  "/history/project-issue-counts": {
+   "get": {
+    "description": "Get issue counts for the flattened list of projects in a portfolio or application. Identify the selection with either the legacy portfolioId parameter, or with both entityType and entityId. The two selector forms are mutually exclusive. ",
+    "operationId": "getProjectIssueCounts",
+    "parameters": [
+     {
+      "description": "Legacy portfolio ID. Either portfolioId or both entityType and entityId must be provided, but not both forms. ",
+      "in": "query",
+      "name": "portfolioId",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Type of the selection whose projects are returned as a flattened list. Must be provided together with entityId and cannot be combined with portfolioId. ",
+      "in": "query",
+      "name": "entityType",
+      "required": false,
+      "schema": {
+       "enum": [
+        "PORTFOLIO",
+        "APPLICATION"
+       ],
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Portfolio ID or application branch ID, according to entityType. Must be provided together with entityType and cannot be combined with portfolioId. ",
+      "in": "query",
+      "name": "entityId",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Comma separated list of ruleKeys",
+      "in": "query",
+      "name": "ruleKeys",
+      "required": false,
+      "schema": {
+       "items": {
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific impact severities (comma-separated).",
+      "in": "query",
+      "name": "severities",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "BLOCKER",
+         "HIGH",
+         "INFO",
+         "LOW",
+         "MEDIUM"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific stored issue severities (comma-separated).",
+      "in": "query",
+      "name": "typeSeverities",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "INFO",
+         "MINOR",
+         "MAJOR",
+         "CRITICAL",
+         "BLOCKER"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific types (comma-separated).",
+      "in": "query",
+      "name": "issueTypes",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "BUG",
+         "CODE_SMELL",
+         "VULNERABILITY"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific statuses (comma-separated).",
+      "in": "query",
+      "name": "statuses",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "ACCEPTED",
+         "CONFIRMED",
+         "FALSE_POSITIVE",
+         "FIXED",
+         "OPEN"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific impacts (comma-separated). An impact is a combination of software quality and severity. ",
+      "in": "query",
+      "name": "impacts",
+      "required": false,
+      "schema": {
+       "items": {
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Search query for project names, case insensitive",
+      "in": "query",
+      "name": "nameContains",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "The date from which to return reference measure values for computing trends. If omitted, reference values will not be returned in the response. ",
+      "in": "query",
+      "name": "referenceDate",
+      "required": false,
+      "schema": {
+       "format": "date-time",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Index of the page to fetch",
+      "in": "query",
+      "name": "pageIndex",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "format": "int32",
+       "minimum": 1,
+       "type": "integer"
+      }
+     },
+     {
+      "description": "Size of the page to fetch.",
+      "in": "query",
+      "name": "pageSize",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "format": "int32",
+       "maximum": 5000,
+       "minimum": 0,
+       "type": "integer"
+      }
+     },
+     {
+      "description": "Defines the sort order of project issue counts. The value is a comma-separated list of fields to sort by. Each field is prefixed with '+' (URL encoded) for ascending or '-' for descending. Valid sort fields are 'issueCount' and 'projectName'. Sorting is done in lexicographical order, i.e. subsequent sort fields are used as tie breakers. ",
+      "in": "query",
+      "name": "sort",
+      "required": false,
+      "schema": {
+       "default": [
+        "-issueCount"
+       ],
+       "items": {
+        "type": "string"
+       },
+       "type": "array"
+      }
+     },
+     {
+      "description": "Only return projects with an issue count greater than 0.",
+      "in": "query",
+      "name": "requireIssues",
+      "required": false,
+      "schema": {
+       "default": false,
+       "type": "boolean"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProjectIssueCountsResponse"
+        }
+       }
+      },
+      "description": "Successfully got project issue counts"
+     },
+     "400": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Bad Request"
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unauthorized"
+     },
+     "403": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Forbidden"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Found"
+     },
+     "429": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Too Many Requests"
+     },
+     "500": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Internal Server Error"
+     }
+    },
+    "security": [
+     {
+      "TokenAuth": []
+     }
+    ],
+    "summary": "Get project issue counts.",
+    "tags": [
+     "project-issue-counts"
+    ]
+   }
+  },
+  "/history/project-issue-resolution": {
+   "get": {
+    "description": "Get issue resolution values for the flattened list of projects in a portfolio or application. Identify the selection with either the legacy portfolioId parameter, or with both entityType and entityId. The two selector forms are mutually exclusive. ",
+    "operationId": "getProjectIssueResolution",
+    "parameters": [
+     {
+      "description": "The project issue resolution statistic to return.",
+      "in": "query",
+      "name": "statistic",
+      "required": true,
+      "schema": {
+       "enum": [
+        "MTTR",
+        "RECENT_MTTR",
+        "RESOLVED_ISSUES"
+       ],
+       "type": "string"
+      }
+     },
+     {
+      "description": "Legacy portfolio ID. Either portfolioId or both entityType and entityId must be provided, but not both forms. ",
+      "in": "query",
+      "name": "portfolioId",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Type of the selection whose projects are returned as a flattened list. Must be provided together with entityId and cannot be combined with portfolioId. ",
+      "in": "query",
+      "name": "entityType",
+      "required": false,
+      "schema": {
+       "enum": [
+        "PORTFOLIO",
+        "APPLICATION"
+       ],
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Portfolio ID or application branch ID, according to entityType. Must be provided together with entityType and cannot be combined with portfolioId. ",
+      "in": "query",
+      "name": "entityId",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific impact severities (comma-separated).",
+      "in": "query",
+      "name": "severities",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "BLOCKER",
+         "HIGH",
+         "INFO",
+         "LOW",
+         "MEDIUM"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific stored issue severities (comma-separated).",
+      "in": "query",
+      "name": "typeSeverities",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "INFO",
+         "MINOR",
+         "MAJOR",
+         "CRITICAL",
+         "BLOCKER"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific types (comma-separated).",
+      "in": "query",
+      "name": "issueTypes",
+      "required": false,
+      "schema": {
+       "items": {
+        "enum": [
+         "BUG",
+         "CODE_SMELL",
+         "VULNERABILITY"
+        ],
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Limit results to issues with specific impacts (comma-separated). An impact is a combination of software quality and severity. ",
+      "in": "query",
+      "name": "impacts",
+      "required": false,
+      "schema": {
+       "items": {
+        "type": "string"
+       },
+       "type": [
+        "array",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Search query for project names, case insensitive",
+      "in": "query",
+      "name": "nameContains",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Date used as the trend comparison point.",
+      "in": "query",
+      "name": "trendSince",
+      "required": false,
+      "schema": {
+       "format": "date-time",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Index of the page to fetch",
+      "in": "query",
+      "name": "pageIndex",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "format": "int32",
+       "minimum": 1,
+       "type": "integer"
+      }
+     },
+     {
+      "description": "Number of projects to return. A value of 0 returns pagination only.",
+      "in": "query",
+      "name": "pageSize",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "format": "int32",
+       "maximum": 5000,
+       "minimum": 0,
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProjectIssueResolutionResponse"
+        }
+       }
+      },
+      "description": "Successfully got project issue resolution values"
+     },
+     "400": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Bad Request"
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unauthorized"
+     },
+     "403": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Forbidden"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Found"
+     },
+     "429": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Too Many Requests"
+     },
+     "500": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Internal Server Error"
+     }
+    },
+    "security": [
+     {
+      "TokenAuth": []
+     }
+    ],
+    "summary": "Get project issue resolution",
+    "tags": [
+     "project-issue-resolution"
+    ]
+   }
+  },
+  "/history/project-measures": {
+   "get": {
+    "description": "Get current measure values for the flattened list of projects in a portfolio or application. Identify the selection with either the legacy portfolioId parameter, or with both entityType and entityId. The two selector forms are mutually exclusive. ",
+    "operationId": "getProjectMeasures",
+    "parameters": [
+     {
+      "description": "Metric key",
+      "in": "query",
+      "name": "metricKey",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "description": "Filter by metric value (exact match). Only supports primitive metric types. It does not support metrics of type DISTR or DATA. ",
+      "in": "query",
+      "name": "metricValue",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Search query for project names, case insensitive",
+      "in": "query",
+      "name": "nameContains",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Index of the page to fetch",
+      "in": "query",
+      "name": "pageIndex",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "format": "int32",
+       "minimum": 1,
+       "type": "integer"
+      }
+     },
+     {
+      "description": "Size of the page to fetch.",
+      "in": "query",
+      "name": "pageSize",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "format": "int32",
+       "maximum": 5000,
+       "minimum": 0,
+       "type": "integer"
+      }
+     },
+     {
+      "description": "Legacy portfolio ID. Either portfolioId or both entityType and entityId must be provided, but not both forms. ",
+      "in": "query",
+      "name": "portfolioId",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Type of the selection whose projects are returned as a flattened list. Must be provided together with entityId and cannot be combined with portfolioId. ",
+      "in": "query",
+      "name": "entityType",
+      "required": false,
+      "schema": {
+       "enum": [
+        "PORTFOLIO",
+        "APPLICATION"
+       ],
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Portfolio ID or application branch ID, according to entityType. Must be provided together with entityType and cannot be combined with portfolioId. ",
+      "in": "query",
+      "name": "entityId",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "The date from which to return reference measure values for computing trends. If omitted, reference values will not be returned in the response. ",
+      "in": "query",
+      "name": "referenceDate",
+      "required": false,
+      "schema": {
+       "format": "date-time",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Defines the sort order of project measures. The value is a comma-separated list of fields to sort by. Each field is prefixed with '+' (URL encoded) for ascending or '-' for descending. Valid sort fields are 'measure.currentValue' and 'projectName'. Sorting is done in lexicographical order, i.e. subsequent sort fields are used as tie breakers. ",
+      "in": "query",
+      "name": "sort",
+      "required": false,
+      "schema": {
+       "default": [
+        "-measure.currentValue"
+       ],
+       "items": {
+        "type": "string"
+       },
+       "type": "array"
+      }
+     },
+     {
+      "description": "Only return projects with a non-null metric value.",
+      "in": "query",
+      "name": "requireValue",
+      "required": false,
+      "schema": {
+       "default": false,
+       "type": "boolean"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ProjectMeasuresResponse"
+        }
+       }
+      },
+      "description": "Successfully got project measure values"
+     },
+     "400": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Bad Request"
+     },
+     "401": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Unauthorized"
+     },
+     "403": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Forbidden"
+     },
+     "404": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Not Found"
+     },
+     "429": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Too Many Requests"
+     },
+     "500": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ErrorResponse"
+        }
+       }
+      },
+      "description": "Internal Server Error"
+     }
+    },
+    "security": [
+     {
+      "TokenAuth": []
+     }
+    ],
+    "summary": "Get current project measure values.",
+    "tags": [
+     "project-measures"
+    ]
+   }
+  },
+  "/marketplace/azure/billing": {
+   "post": {
+    "description": "Used by admin to bill user's Azure account with the cost of SonarQube Server license.",
+    "operationId": "billAzureAccount",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/AzureBillingRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Bills user's Azure account with the cost of SonarQube Server license",
+    "tags": [
+     "Marketplace Azure"
+    ]
+   }
+  },
+  "/onboarding/overview": {
+   "get": {
+    "operationId": "getOnboardingOverview",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "organizationKey",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/OnboardingOverviewResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "tags": [
+     "onboarding-controller"
+    ]
+   }
+  },
+  "/onboarding/projects": {
+   "get": {
+    "operationId": "getOnboardingProjects",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "organizationKey",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "in": "query",
+      "name": "q",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "in": "query",
+      "name": "scanStatus",
+      "required": false,
+      "schema": {
+       "enum": [
+        "SCANNED",
+        "NOT_SCANNED"
+       ],
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "in": "query",
+      "name": "analysisMode",
+      "required": false,
+      "schema": {
+       "enum": [
+        "CI",
+        "AUTOMATIC",
+        "NONE"
+       ],
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "in": "query",
+      "name": "pageIndex",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "format": "int32",
+       "minimum": 1,
+       "type": "integer"
+      }
+     },
+     {
+      "in": "query",
+      "name": "pageSize",
+      "required": false,
+      "schema": {
+       "default": 100,
+       "format": "int32",
+       "maximum": 500,
+       "minimum": 1,
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/OnboardingProjectsResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "tags": [
+     "onboarding-controller"
+    ]
+   }
+  },
+  "/onboarding/statistics": {
+   "get": {
+    "operationId": "getOnboardingStatistics",
+    "parameters": [
+     {
+      "in": "query",
+      "name": "organizationKey",
+      "required": false,
+      "schema": {
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "in": "query",
+      "name": "startDate",
+      "required": false,
+      "schema": {
+       "format": "date-time",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "in": "query",
+      "name": "endDate",
+      "required": false,
+      "schema": {
+       "format": "date-time",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/OnboardingStatisticsResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "tags": [
+     "onboarding-controller"
+    ]
+   }
+  },
+  "/system/email-configurations": {
+   "get": {
+    "description": "  Get the list of email configurations.\n  Note that a single configuration is supported at this time.\n  Requires 'Administer System' permission.\n",
+    "operationId": "searchEmailConfigurations",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmailConfigurationSearchRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Search email configurations",
+    "tags": [
+     "System"
+    ],
+    "x-sonar-internal": "true"
+   },
+   "post": {
+    "description": "  Create a new email configuration.\n  Note that only a single configuration can exist at a time.\n  Requires 'Administer System' permission.\n",
+    "operationId": "createEmailConfiguration",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/EmailConfigurationCreateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmailConfigurationResource"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Create an email configuration",
+    "tags": [
+     "System"
+    ],
+    "x-sonar-internal": "true"
+   }
+  },
+  "/system/email-configurations/{id}": {
+   "delete": {
+    "description": "Delete an email configuration.\nRequires 'Administer System' permission.\n",
+    "operationId": "deleteEmailConfiguration",
+    "parameters": [
+     {
+      "description": "The id of the configuration to delete.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "No Content"
+     }
+    },
+    "summary": "Delete an email configuration",
+    "tags": [
+     "System"
+    ],
+    "x-sonar-internal": "true"
+   },
+   "get": {
+    "description": "Fetch a Email configuration. Requires 'Administer System' permission.\n",
+    "operationId": "getEmailConfiguration",
+    "parameters": [
+     {
+      "description": "The id of the configuration to fetch.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmailConfigurationResource"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Fetch an email configuration",
+    "tags": [
+     "System"
+    ],
+    "x-sonar-internal": "true"
+   },
+   "patch": {
+    "description": "Update an email configuration. Requires 'Administer System' permission.\n",
+    "operationId": "updateEmailConfiguration",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/merge-patch+json": {
+       "schema": {
+        "$ref": "#/components/schemas/EmailConfigurationUpdateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EmailConfigurationResource"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Update an email configuration",
+    "tags": [
+     "System"
+    ],
+    "x-sonar-internal": "true"
+   }
+  },
+  "/system/health": {
+   "get": {
+    "operationId": "getHealth",
+    "parameters": [
+     {
+      "in": "header",
+      "name": "X-Sonar-Passcode",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/Health"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "tags": [
+     "System"
+    ]
+   }
+  },
+  "/system/liveness": {
+   "get": {
+    "description": "  Require 'Administer System' permission or authentication with passcode.\n\n  When SonarQube is fully started, liveness check for database connectivity, Compute Engine status, and, except for DataCenter Edition, if ElasticSearch is Green or Yellow.\n\n  When SonarQube is on Safe Mode (for example when a database migration is running), liveness check only for database connectivity\n",
+    "operationId": "livenessCheck",
+    "parameters": [
+     {
+      "description": "Passcode can be provided, see SonarQube documentation",
+      "in": "header",
+      "name": "X-Sonar-Passcode",
+      "required": false,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "This SonarQube node is alive"
+     },
+     "default": {
+      "description": "This SonarQube node is not alive and should be rescheduled"
+     }
+    },
+    "summary": "Provide liveness of SonarQube, meant to be used as a liveness probe on Kubernetes",
+    "tags": [
+     "System"
+    ]
+   }
+  },
+  "/system/migrations-status": {
+   "get": {
+    "description": "Return the detailed status of ongoing database migrations including starting date. If no migration is ongoing or needed it is still possible to call this endpoint and receive appropriate information.",
+    "operationId": "getStatus",
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/DatabaseMigrationsResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Gets the status of ongoing database migrations, if any",
+    "tags": [
+     "System"
+    ]
+   }
+  },
+  "/users-management/users": {
+   "get": {
+    "description": "  Get a list of users. By default, only active users are returned.\n  The following fields are only returned when user has Administer System permission or for logged-in in user :\n    'email',\n    'externalIdentity',\n    'externalProvider',\n    'groups',\n    'lastConnectionDate',\n    'sonarLintLastConnectionDate',\n    'tokensCount'.\n  Field 'sonarqubeLastConnectionDate' is only updated every hour, so it may not be accurate, for instance when a user authenticates many times in less than one hour.\n  The results are sorted alphabetically by login.\n",
+    "operationId": "search",
+    "parameters": [
+     {
+      "description": "Return active/inactive users",
+      "in": "query",
+      "name": "active",
+      "required": false,
+      "schema": {
+       "default": true,
+       "description": "Return active/inactive users",
+       "type": "boolean"
+      }
+     },
+     {
+      "description": "Return managed or non-managed users. Only available for managed instances, throws for non-managed instances",
+      "in": "query",
+      "name": "managed",
+      "required": false,
+      "schema": {
+       "description": "Return managed or non-managed users. Only available for managed instances, throws for non-managed instances",
+       "type": [
+        "boolean",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Filter on login, name and email.\nThis parameter performs a partial match (contains), it is case insensitive.",
+      "in": "query",
+      "name": "q",
+      "required": false,
+      "schema": {
+       "description": "Filter on login, name and email.\nThis parameter performs a partial match (contains), it is case insensitive.",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Filter on externalIdentity.\nThis parameter perform a case-sensitive exact match",
+      "in": "query",
+      "name": "externalIdentity",
+      "required": false,
+      "schema": {
+       "description": "Filter on externalIdentity.\nThis parameter perform a case-sensitive exact match",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Filter users based on the last connection date field. Only users who interacted with this instance at or after the date will be returned. The format must be ISO 8601 datetime format (YYYY-MM-DDThh:mm:ss\u00b1hhmm)",
+      "example": "2020-01-01T00:00:00+0100",
+      "in": "query",
+      "name": "sonarQubeLastConnectionDateFrom",
+      "required": false,
+      "schema": {
+       "description": "Filter users based on the last connection date field. Only users who interacted with this instance at or after the date will be returned. The format must be ISO 8601 datetime format (YYYY-MM-DDThh:mm:ss\u00b1hhmm)",
+       "example": "2020-01-01T00:00:00+0100",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Filter users based on the last connection date field. Only users that never connected or who interacted with this instance at or before the date will be returned. The format must be ISO 8601 datetime format (YYYY-MM-DDThh:mm:ss\u00b1hhmm)",
+      "example": "2020-01-01T00:00:00+0100",
+      "in": "query",
+      "name": "sonarQubeLastConnectionDateTo",
+      "required": false,
+      "schema": {
+       "description": "Filter users based on the last connection date field. Only users that never connected or who interacted with this instance at or before the date will be returned. The format must be ISO 8601 datetime format (YYYY-MM-DDThh:mm:ss\u00b1hhmm)",
+       "example": "2020-01-01T00:00:00+0100",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Filter users based on the SonarLint last connection date field Only users who interacted with this instance using SonarLint at or after the date will be returned. The format must be ISO 8601 datetime format (YYYY-MM-DDThh:mm:ss\u00b1hhmm)",
+      "example": "2020-01-01T00:00:00+0100",
+      "in": "query",
+      "name": "sonarLintLastConnectionDateFrom",
+      "required": false,
+      "schema": {
+       "description": "Filter users based on the SonarLint last connection date field Only users who interacted with this instance using SonarLint at or after the date will be returned. The format must be ISO 8601 datetime format (YYYY-MM-DDThh:mm:ss\u00b1hhmm)",
+       "example": "2020-01-01T00:00:00+0100",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Filter users based on the SonarLint last connection date field. Only users that never connected or who interacted with this instance using SonarLint at or before the date will be returned. The format must be ISO 8601 datetime format (YYYY-MM-DDThh:mm:ss\u00b1hhmm)",
+      "example": "2020-01-01T00:00:00+0100",
+      "in": "query",
+      "name": "sonarLintLastConnectionDateTo",
+      "required": false,
+      "schema": {
+       "description": "Filter users based on the SonarLint last connection date field. Only users that never connected or who interacted with this instance using SonarLint at or before the date will be returned. The format must be ISO 8601 datetime format (YYYY-MM-DDThh:mm:ss\u00b1hhmm)",
+       "example": "2020-01-01T00:00:00+0100",
+       "type": [
+        "string",
+        "null"
+       ]
+      }
+     },
+     {
+      "description": "Filter users belonging to group. Only available for system administrators. Using != operator will exclude users from this group.",
+      "in": "query",
+      "name": "groupId",
+      "required": false,
+      "schema": {
+       "description": "Filter users belonging to group. Only available for system administrators. Using != operator will exclude users from this group.",
+       "internal": "true",
+       "type": [
+        "string",
+        "null"
+       ]
+      },
+      "x-internal": "true"
+     },
+     {
+      "description": "Number of results per page. A value of 0 will only return the pagination information.",
+      "in": "query",
+      "name": "pageSize",
+      "required": false,
+      "schema": {
+       "default": 50,
+       "description": "Number of results per page. A value of 0 will only return the pagination information.",
+       "format": "int32",
+       "maximum": 500,
+       "minimum": 0,
+       "type": "integer"
+      }
+     },
+     {
+      "description": "1-based page index",
+      "in": "query",
+      "name": "pageIndex",
+      "required": false,
+      "schema": {
+       "default": 1,
+       "description": "1-based page index",
+       "exclusiveMinimum": 0,
+       "format": "int32",
+       "minimum": 1,
+       "type": "integer"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UsersSearchRestResponse"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Users search",
+    "tags": [
+     "Users Management"
+    ]
+   },
+   "post": {
+    "description": "  Create a user.\n  If a deactivated user account exists with the given login, it will be reactivated.\n  Requires Administer System permission.\n",
+    "operationId": "create",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/UserCreateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UserRestResponseForAdmins"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "User creation",
+    "tags": [
+     "Users Management"
+    ]
+   }
+  },
+  "/users-management/users/{id}": {
+   "delete": {
+    "description": "Deactivates a user. Requires Administer System permission.",
+    "operationId": "deactivate",
+    "parameters": [
+     {
+      "description": "The ID of the user to delete.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     },
+     {
+      "description": "Anonymize user in addition to deactivating it.",
+      "in": "query",
+      "name": "anonymize",
+      "required": false,
+      "schema": {
+       "default": false,
+       "type": "boolean"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "No Content"
+     }
+    },
+    "summary": "Deactivate a user",
+    "tags": [
+     "Users Management"
+    ]
+   },
+   "get": {
+    "description": "Fetch a single user.\nThe following fields are only returned when user has Administer System permission or for logged-in in user :\n    'email'\n    'externalIdentity'\n    'externalProvider'\n    'groups'\n    'lastConnectionDate'\n    'sonarLintLastConnectionDate'\n    'tokensCount'\n  Field 'sonarqubeLastConnectionDate' is only updated every hour, so it may not be accurate, for instance when a user authenticates many times in less than one hour.\n",
+    "operationId": "fetchUser",
+    "parameters": [
+     {
+      "description": "The id of the user to fetch.",
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UserRestResponseForAdmins"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Fetch a single user",
+    "tags": [
+     "Users Management"
+    ]
+   },
+   "patch": {
+    "description": "Update users attributes.\n",
+    "operationId": "updateUser",
+    "parameters": [
+     {
+      "in": "path",
+      "name": "id",
+      "required": true,
+      "schema": {
+       "type": "string"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/merge-patch+json": {
+       "schema": {
+        "$ref": "#/components/schemas/UserUpdateRestRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/UserRestResponseForAdmins"
+        }
+       }
+      },
+      "description": "OK"
+     }
+    },
+    "summary": "Update a user",
+    "tags": [
+     "Users Management"
+    ]
+   }
+  }
+ },
+ "servers": [
+  {
+   "description": "Generated server url",
+   "url": "http://localhost:19000/api/v2"
+  }
+ ],
+ "tags": [
+  {
+   "description": "the project-measures API",
+   "name": "project-measures"
+  },
+  {
+   "description": "the issue-density-history API",
+   "name": "issue-density-history"
+  },
+  {
+   "description": "the measures-history API",
+   "name": "measures-history"
+  },
+  {
+   "description": "the built-in-dashboards API",
+   "name": "built-in-dashboards"
+  },
+  {
+   "description": "the issue-count-history API",
+   "name": "issue-count-history"
+  },
+  {
+   "description": "the issue-resolution-history API",
+   "name": "issue-resolution-history"
+  },
+  {
+   "description": "the project-issue-counts API",
+   "name": "project-issue-counts"
+  },
+  {
+   "description": "the project-issue-resolution API",
+   "name": "project-issue-resolution"
+  }
+ ]
+}

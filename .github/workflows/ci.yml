@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Generated code is up to date
+        run: |
+          (cd tools/codegen && go run . -root ../..)
+          git diff --exit-code -- '*.go' || { echo "::error::run 'make generate' and commit the result"; exit 1; }
+      - name: gofmt
+        run: test -z "$(gofmt -l . | tee /dev/stderr)"
+      - run: go vet ./... && go vet -tags integration ./integration
+      - uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0
+        with:
+          version: v2.15.0
+
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Unit tests (race, coverage)
+        run: |
+          go test -race -covermode=atomic -coverprofile=coverage.out -json ./... > test-report.json || {
+            grep '"Action":"fail"' test-report.json | head -20; exit 1; }
+          go tool cover -func=coverage.out | tail -1
+      - name: Library coverage must be 100%
+        run: |
+          go test -covermode=atomic -coverprofile=lib.out ./sonarqube >/dev/null
+          total=$(go tool cover -func=lib.out | awk '/^total:/ {print $3}')
+          echo "library coverage: $total"
+          [ "$total" = "100.0%" ] || { echo "::error::library coverage dropped to $total"; exit 1; }
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: unit-coverage
+          path: |
+            coverage.out
+            test-report.json
+
+  sonarqube:
+    name: SonarQube scan
+    needs: unit
+    runs-on: ubuntu-latest
+    # Secrets are unavailable to pull requests from forks.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0 # blame information for new-code detection
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: unit-coverage
+      - name: Check configuration
+        id: cfg
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || secrets.SONAR_HOST_URL }}
+        run: |
+          if [ -z "$SONAR_TOKEN" ] || [ -z "$SONAR_HOST_URL" ]; then
+            echo "::warning::SONAR_TOKEN / SONAR_HOST_URL not configured; skipping SonarQube scan"
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.cfg.outputs.skip != 'true'
+        uses: SonarSource/sonarqube-scan-action@59202af334b4ba7b5db01b701b8e79f8b3bef0f4 # v8.5.0
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ vars.SONAR_HOST_URL || secrets.SONAR_HOST_URL }}

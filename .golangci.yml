@@ -1,0 +1,30 @@
+version: "2"
+run:
+  build-tags: [integration]
+linters:
+  default: standard
+  enable:
+    - bodyclose
+    - errorlint
+    - gosec
+    - misspell
+    - noctx
+    - revive
+    - unconvert
+  settings:
+    gosec:
+      excludes:
+        - G304 # CLI reads files the user names on purpose
+  exclusions:
+    generated: strict
+    presets: [comments, std-error-handling]
+    paths:
+      - tools/codegen
+    rules:
+      # The integration suite must call deprecated endpoints to cover them.
+      - path: integration/
+        linters: [staticcheck]
+        text: SA1019
+      # Test servers and fixtures, not production code paths.
+      - path: _test\.go
+        linters: [gosec]

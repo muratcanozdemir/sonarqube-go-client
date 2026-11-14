@@ -1,0 +1,141 @@
+name: Integration
+
+# Each job pulls a ~1 GB SonarQube image, boots it, analyses a fixture project
+# and calls every endpoint available on that release, so runs are tiered:
+#
+#   pull request / push to main  oldest + newest CE, no restart test
+#                                (only when client, tests or specs change)
+#   release PR (release-please)  every CE release in the matrix, full suite
+#   weekly schedule              every CE release, full suite
+#   manual dispatch              chosen releases ("all" by default)
+on:
+  pull_request:
+    paths:
+      - "sonarqube/**"
+      - "integration/**"
+      - "scripts/it-seed.sh"
+      - "spec/**"
+      - "docs/**"
+      - "go.mod"
+      - "go.sum"
+      - ".github/workflows/integration.yml"
+  push:
+    branches: [main]
+    paths:
+      - "sonarqube/**"
+      - "integration/**"
+      - "scripts/it-seed.sh"
+      - "spec/**"
+      - "docs/**"
+      - "go.mod"
+      - "go.sum"
+      - ".github/workflows/integration.yml"
+  schedule:
+    - cron: "17 3 * * 1" # Mondays 03:17 UTC
+  workflow_dispatch:
+    inputs:
+      versions:
+        description: 'Space-separated SonarQube CE builds, or "all"'
+        default: all
+      short:
+        description: Skip the server restart test
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: integration-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Every Community Edition release in docs/ (endpoint × version matrix).
+  ALL_VERSIONS: >-
+    25.1.0.102122 25.2.0.102705 25.3.0.104237 25.4.0.105899 25.5.0.107428
+    25.6.0.109173 25.7.0.110598 25.8.0.112029 25.9.0.112764 25.10.0.114319
+    25.11.0.114957 25.12.0.117093 26.1.0.118079 26.2.0.119303 26.3.0.120487
+    26.4.0.121862 26.5.0.122743 26.6.0.123539 26.7.0.124771 26.8.0.126808
+    26.9.0.129388 26.10.0.133078 26.11.0.134175
+  EDGE_VERSIONS: 25.1.0.102122 26.11.0.134175
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    outputs:
+      versions: ${{ steps.plan.outputs.versions }}
+      short: ${{ steps.plan.outputs.short }}
+    steps:
+      - id: plan
+        env:
+          EVENT: ${{ github.event_name }}
+          HEAD_REF: ${{ github.head_ref }}
+          INPUT_VERSIONS: ${{ inputs.versions }}
+          INPUT_SHORT: ${{ inputs.short }}
+        run: |
+          short=true
+          case "$EVENT" in
+            schedule) list=$ALL_VERSIONS; short=false ;;
+            workflow_dispatch)
+              list=$INPUT_VERSIONS; [ "$list" = all ] && list=$ALL_VERSIONS
+              short=$INPUT_SHORT ;;
+            *)
+              list=$EDGE_VERSIONS
+              if [[ "$HEAD_REF" == release-please--* ]]; then list=$ALL_VERSIONS; short=false; fi ;;
+          esac
+          read -r -a versions <<< "$list"
+          json=$(printf '%s\n' "${versions[@]}" | jq -R . | jq -sc .)
+          echo "versions=$json" >> "$GITHUB_OUTPUT"
+          echo "short=$short" >> "$GITHUB_OUTPUT"
+          echo "Testing $(echo "$json" | jq length) release(s), short=$short" >> "$GITHUB_STEP_SUMMARY"
+
+  # Every endpoint available on the release is exercised; the suite fails if
+  # any endpoint is not reached.
+  integration:
+    needs: plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 6 # bounded to stay polite to Docker Hub and the runner pool
+      matrix:
+        sonarqube: ${{ fromJSON(needs.plan.outputs.versions) }}
+    name: CE ${{ matrix.sonarqube }}
+    services:
+      sonarqube:
+        image: sonarqube:${{ matrix.sonarqube }}-community
+        ports: ["9000:9000"]
+        env:
+          SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+          SONAR_WEB_SYSTEMPASSCODE: it-passcode
+    env:
+      SONARQUBE_URL: http://localhost:9000
+      SONARQUBE_PASSCODE: it-passcode
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+      - name: Seed server (admin token, two analyses of the fixture project)
+        run: ./scripts/it-seed.sh "$RUNNER_TEMP/it.env"
+        env:
+          SONARQUBE_ADMIN_PASSWORD: ${{ format('It-{0}-Pw!', github.run_id) }}
+          SCANNER_IMAGE: sonarsource/sonar-scanner-cli:11
+      - name: Integration tests
+        env:
+          IT_REPORT: ${{ github.workspace }}/coverage-${{ matrix.sonarqube }}.json
+          SHORT: ${{ needs.plan.outputs.short }}
+        run: |
+          set -o pipefail
+          set -a; . "$RUNNER_TEMP/it.env"; set +a
+          echo "::add-mask::$SONARQUBE_TOKEN"
+          flags=""; [ "$SHORT" = true ] && flags="-short"
+          go test -count=1 -timeout 30m -tags integration $flags -v ./integration 2>&1 | tee integration.log
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: integration-${{ matrix.sonarqube }}
+          path: |
+            coverage-${{ matrix.sonarqube }}.json
+            integration.log
+          if-no-files-found: ignore
