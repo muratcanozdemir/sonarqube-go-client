@@ -87,7 +87,8 @@ func TestAlmSettings(t *testing.T) {
 		ok(c.DopTranslation.CheckPermissions(ctx, &sq.DopTranslationCheckPermissionsOptions{Project: scanned})).allow(t, unreachable...)
 	}
 	if available("DopTranslation.GetJfrogEvidence") {
-		ok(c.DopTranslation.GetJfrogEvidence(ctx, &sq.DopTranslationGetJfrogEvidenceOptions{TaskID: "it-no-such-task"})).allow(t, 404)
+		// Enterprise-only: Community Edition answers 403 before looking up the task.
+		ok(c.DopTranslation.GetJfrogEvidence(ctx, &sq.DopTranslationGetJfrogEvidenceOptions{TaskID: "it-no-such-task"})).allow(t, 403, 404)
 	}
 }
 
