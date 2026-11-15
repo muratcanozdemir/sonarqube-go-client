@@ -1,7 +1,10 @@
-.PHONY: generate test cover lint integration-up integration build
+.PHONY: generate modcheck test cover lint integration-up integration build
 
 generate: ## Regenerate the client from docs/ and spec/
 	cd tools/codegen && go run . -root ../..
+
+modcheck: ## Fail if any tracked path would break the module zip
+	git -c core.quotepath=off ls-files | (cd tools/modcheck && go run .)
 
 test: ## Unit tests with the race detector
 	go test -race ./...

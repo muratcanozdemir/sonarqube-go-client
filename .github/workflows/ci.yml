@@ -29,6 +29,10 @@ jobs:
         run: |
           (cd tools/codegen && go run . -root ../..)
           git diff --exit-code -- '*.go' || { echo "::error::run 'make generate' and commit the result"; exit 1; }
+      - name: File paths are valid in a module zip
+        # The go command refuses a whole version if any file path breaks the
+        # module rules (v1.0.0 and v1.0.1 shipped a '×' in a docs/ file name).
+        run: git -c core.quotepath=off ls-files | (cd tools/modcheck && go run .)
       - name: gofmt
         run: test -z "$(gofmt -l . | tee /dev/stderr)"
       - run: go vet ./... && go vet -tags integration ./integration

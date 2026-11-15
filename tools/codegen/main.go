@@ -28,7 +28,7 @@ func main() {
 
 func run(root string, verbose bool) error {
 	sh, err := readSheets(
-		filepath.Join(root, "docs", "sonarqube-client-go endpoint × SonarQube version matrix.xlsx"),
+		filepath.Join(root, "docs", "sonarqube-client-go endpoint x SonarQube version matrix.xlsx"),
 		filepath.Join(root, "docs", "sonarqube-client-go parameter changes per SonarQube version.xlsx"),
 	)
 	if err != nil {
