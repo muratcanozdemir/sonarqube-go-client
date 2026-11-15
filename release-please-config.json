@@ -9,7 +9,7 @@
       "extra-files": [
         {
           "type": "generic",
-          "path": "sonarqube/client.go"
+          "path": "sonarqube/version.go"
         },
         {
           "type": "generic",

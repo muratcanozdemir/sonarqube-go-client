@@ -26,9 +26,6 @@ import (
 	"time"
 )
 
-// Version is the version of this library. It is updated by release-please.
-const Version = "1.0.1" // x-release-please-version
-
 const defaultUserAgent = "sonarqube-go-client/" + Version
 
 // Client talks to one SonarQube Server instance.

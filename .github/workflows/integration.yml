@@ -4,14 +4,16 @@ name: Integration
 # and calls every endpoint available on that release, so runs are tiered:
 #
 #   pull request / push to main  oldest + newest CE, no restart test
-#                                (only when client, tests or specs change)
-#   release PR (release-please)  every CE release in the matrix, full suite
+#                                (only when client, tests or specs change;
+#                                release PRs only bump sonarqube/version.go
+#                                and CHANGELOG.md, so they do not run it)
 #   weekly schedule              every CE release, full suite
 #   manual dispatch              chosen releases ("all" by default)
 on:
   pull_request:
     paths:
       - "sonarqube/**"
+      - "!sonarqube/version.go" # release-please version bump only
       - "integration/**"
       - "scripts/it-seed.sh"
       - "spec/**"
@@ -23,6 +25,7 @@ on:
     branches: [main]
     paths:
       - "sonarqube/**"
+      - "!sonarqube/version.go" # release-please version bump only
       - "integration/**"
       - "scripts/it-seed.sh"
       - "spec/**"
@@ -69,7 +72,6 @@ jobs:
       - id: plan
         env:
           EVENT: ${{ github.event_name }}
-          HEAD_REF: ${{ github.head_ref }}
           INPUT_VERSIONS: ${{ inputs.versions }}
           INPUT_SHORT: ${{ inputs.short }}
         run: |
@@ -79,9 +81,7 @@ jobs:
             workflow_dispatch)
               list=$INPUT_VERSIONS; [ "$list" = all ] && list=$ALL_VERSIONS
               short=$INPUT_SHORT ;;
-            *)
-              list=$EDGE_VERSIONS
-              if [[ "$HEAD_REF" == release-please--* ]]; then list=$ALL_VERSIONS; short=false; fi ;;
+            *) list=$EDGE_VERSIONS ;;
           esac
           read -r -a versions <<< "$list"
           json=$(printf '%s\n' "${versions[@]}" | jq -R . | jq -sc .)
