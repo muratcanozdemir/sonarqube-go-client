@@ -1,7 +1,7 @@
 name: Release Please
 
 # Keeps a release pull request open on main: it bumps the version
-# (sonarqube/client.go, sonar-project.properties, .release-please-manifest.json)
+# (sonarqube/version.go, sonar-project.properties, .release-please-manifest.json)
 # and writes CHANGELOG.md from the Conventional Commits since the last release.
 # Merging it tags vX.Y.Z and creates the GitHub release with those notes;
 # release.yml then builds the CLI at the tag and attaches the binary archive,
