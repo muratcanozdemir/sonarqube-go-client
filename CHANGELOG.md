@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/muratcanozdemir/sonarqube-go-client/compare/v1.0.2...v1.0.3) (2026-11-15)
+
+
+### Bug Fixes
+
+* fixing patch.go workaround ([#8](https://github.com/muratcanozdemir/sonarqube-go-client/issues/8)) ([8afb9a7](https://github.com/muratcanozdemir/sonarqube-go-client/commit/8afb9a74e446fc100f095ed8dc33090b0e092511))
+
 ## [1.0.2](https://github.com/muratcanozdemir/sonarqube-go-client/compare/v1.0.1...v1.0.2) (2026-11-15)
 
 
