@@ -86,6 +86,7 @@ func (b *builder) emit(outDir string) error {
 			fmt.Fprintf(&m, "\t%s %s `json:%q`\n", fd.Name, fd.Type, tag)
 		}
 		m.WriteString("}\n\n")
+		emitUpdateFieldJSON(&m, st)
 	}
 	if err := writeGo(filepath.Join(outDir, "models_gen.go"), m.String()); err != nil {
 		return err
@@ -428,4 +429,37 @@ func goRawString(s string) string {
 		return "`" + s + "`"
 	}
 	return strconv.Quote(s)
+}
+
+// emitUpdateFieldJSON gives an UpdateField* schema its wire form. SonarQube
+// documents these fields as {"defined": bool, "value": T}, but its v2 PATCH
+// endpoints read the bare value and answer "Invalid request format" to the
+// object. A nil pointer to such a field is omitted, leaving the value
+// unchanged; a non-nil one sends Value, a nil list being sent as [] so that
+// it clears the list rather than being null.
+func emitUpdateFieldJSON(m *strings.Builder, st *Struct) {
+	if !strings.HasPrefix(st.Name, "UpdateField") {
+		return
+	}
+	var valueType string
+	for _, fd := range st.Fields {
+		if fd.Name == "Value" {
+			valueType = fd.Type
+		}
+	}
+	if valueType == "" {
+		return
+	}
+	n := st.Name
+	fmt.Fprintf(m, "// MarshalJSON encodes the field as SonarQube reads it: the bare Value. Defined is\n"+
+		"// not sent: leave the pointer to the field nil to keep the current value.\n")
+	fmt.Fprintf(m, "func (u %s) MarshalJSON() ([]byte, error) {\n", n)
+	if strings.HasPrefix(valueType, "[]") {
+		fmt.Fprintf(m, "\tif u.Value == nil {\n\t\treturn []byte(\"[]\"), nil\n\t}\n")
+	}
+	fmt.Fprintf(m, "\treturn json.Marshal(u.Value)\n}\n\n")
+	fmt.Fprintf(m, "// UnmarshalJSON decodes a bare value, setting Defined.\n")
+	fmt.Fprintf(m, "func (u *%s) UnmarshalJSON(b []byte) error {\n", n)
+	fmt.Fprintf(m, "\tvar v %s\n\tif err := json.Unmarshal(b, &v); err != nil {\n\t\treturn err\n\t}\n", valueType)
+	fmt.Fprintf(m, "\tdefined := true\n\t*u = %s{Defined: &defined, Value: v}\n\treturn nil\n}\n\n", n)
 }

@@ -98,7 +98,12 @@ func TestUsersAndGroupsV2(t *testing.T) {
 		Login: login, Name: "IT v2", Email: sq.Ptr(login + "@example.com"), Password: sq.Ptr("It-User-Passw0rd!"),
 	}})).must(t)
 	ok(c.UsersManagement.Get(ctx, &sq.UsersManagementGetOptions{ID: u.ID})).must(t)
-	ok(c.UsersManagement.Update(ctx, &sq.UsersManagementUpdateOptions{ID: u.ID, Body: &sq.UserUpdateRestRequest{Name: sq.Ptr("IT v2 renamed")}})).must(t)
+	// SCM accounts are an UpdateField, which SonarQube reads as a bare list.
+	upd := ok(c.UsersManagement.Update(ctx, &sq.UsersManagementUpdateOptions{ID: u.ID, Body: &sq.UserUpdateRestRequest{
+		Name: sq.Ptr("IT v2 renamed"), SCMAccounts: &sq.UpdateFieldListString{Value: []string{login + "-scm"}}}})).must(t)
+	if len(upd.SCMAccounts) != 1 || upd.SCMAccounts[0] != login+"-scm" {
+		t.Errorf("scmAccounts after update: %v", upd.SCMAccounts)
+	}
 	ok(c.UsersManagement.Search(ctx, &sq.UsersManagementSearchOptions{Q: login})).must(t)
 
 	g := ok(c.Authorizations.CreateGroup(ctx, &sq.AuthorizationsCreateGroupOptions{Body: &sq.GroupCreateRestRequest{Name: uniq("it-v2group"), Description: sq.Ptr("it")}})).must(t)

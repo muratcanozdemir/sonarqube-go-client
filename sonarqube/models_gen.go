@@ -7976,6 +7976,26 @@ type UpdateFieldListString struct {
 	Value   []string `json:"value,omitempty"`
 }
 
+// MarshalJSON encodes the field as SonarQube reads it: the bare Value. Defined is
+// not sent: leave the pointer to the field nil to keep the current value.
+func (u UpdateFieldListString) MarshalJSON() ([]byte, error) {
+	if u.Value == nil {
+		return []byte("[]"), nil
+	}
+	return json.Marshal(u.Value)
+}
+
+// UnmarshalJSON decodes a bare value, setting Defined.
+func (u *UpdateFieldListString) UnmarshalJSON(b []byte) error {
+	var v []string
+	if err := json.Unmarshal(b, &v); err != nil {
+		return err
+	}
+	defined := true
+	*u = UpdateFieldListString{Defined: &defined, Value: v}
+	return nil
+}
+
 // UserBindingCreationRequest — User binding creation request
 type UserBindingCreationRequest struct {
 	// Required.
