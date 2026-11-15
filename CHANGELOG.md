@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.0.2](https://github.com/muratcanozdemir/sonarqube-go-client/compare/v1.0.1...v1.0.2) (2026-11-15)
+
+
+### Bug Fixes
+
+* fix integration run windows ([#6](https://github.com/muratcanozdemir/sonarqube-go-client/issues/6)) ([5e08eff](https://github.com/muratcanozdemir/sonarqube-go-client/commit/5e08eff9a298f662ff4d946e7d486f7fa4c04246))
+* rename docs file so the module zip is valid ([#4](https://github.com/muratcanozdemir/sonarqube-go-client/issues/4)) ([c3b8003](https://github.com/muratcanozdemir/sonarqube-go-client/commit/c3b80032a7fa345fa96bc5419bac428c050d857f))
+
 ## [1.0.1](https://github.com/muratcanozdemir/sonarqube-go-client/compare/v1.0.0...v1.0.1) (2026-11-14)
 
 
